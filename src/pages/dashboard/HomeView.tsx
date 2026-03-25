@@ -68,8 +68,8 @@ export default function HomeView() {
             {getGreeting()}, {firstName} 👋
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            You're on a{" "}
-            <span className="text-orange-400 font-medium">
+          You're on a{" "}
+            <span className="text-streak font-medium">
               {currentUser.streakDays}-day streak
             </span>{" "}
             🔥 Keep it up.
