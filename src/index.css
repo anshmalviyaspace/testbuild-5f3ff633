@@ -38,6 +38,10 @@
     --surface: 213 24% 9%;
     --surface2: 213 20% 12%;
     --muted2: 212 18% 28%;
+    --warning: 45 100% 60%;
+    --warning-foreground: 216 30% 5%;
+    --streak: 25 95% 55%;
+    --streak-foreground: 216 30% 5%;
 
     --sidebar-background: 213 24% 9%;
     --sidebar-foreground: 210 33% 96%;
