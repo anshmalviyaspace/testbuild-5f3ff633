@@ -1,4 +1,4 @@
-import { Play, FileText, BookOpen, Lock, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Play, FileText, BookOpen, Lock, ArrowRight, CheckCircle2, Wrench } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import clsx from "clsx";
 import type { Module, Resource } from "@/data/trackData";
@@ -7,6 +7,7 @@ const typeConfig: Record<Resource["type"], { icon: typeof Play; color: string; b
   video: { icon: Play, color: "text-destructive", bg: "bg-destructive/10" },
   article: { icon: FileText, color: "text-accent", bg: "bg-accent/10" },
   docs: { icon: BookOpen, color: "text-primary", bg: "bg-primary/10" },
+  tool: { icon: Wrench, color: "text-yellow-400", bg: "bg-yellow-400/10" },
 };
 
 interface Props {
@@ -98,20 +99,32 @@ export default function ModuleDetail({
 
                 {/* Content */}
                 <div className="min-w-0 flex-1">
-                  <a
-                    href={r.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={clsx(
-                      "text-sm font-medium hover:text-primary transition-colors block truncate",
-                      checked ? "text-muted-foreground line-through" : "text-foreground"
+                  <div className="flex items-center gap-2">
+                    <a
+                      href={r.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={clsx(
+                        "text-sm font-medium hover:text-primary transition-colors block truncate",
+                        checked ? "text-muted-foreground line-through" : "text-foreground"
+                      )}
+                    >
+                      {r.title}
+                    </a>
+                    {r.duration && (
+                      <span className="text-[10px] font-mono text-muted-foreground shrink-0">
+                        {r.duration}
+                      </span>
                     )}
-                  >
-                    {r.title}
-                  </a>
+                  </div>
                   <p className="text-[10px] font-mono text-muted-foreground mt-0.5">
                     {r.source}
                   </p>
+                  {r.why && !checked && (
+                    <p className="text-xs text-muted-foreground/70 mt-1 leading-relaxed">
+                      {r.why}
+                    </p>
+                  )}
                 </div>
               </div>
             );
