@@ -1,4 +1,4 @@
-import { Play, FileText, BookOpen, Lock, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Play, FileText, BookOpen, Lock, ArrowRight, CheckCircle2, Wrench } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import clsx from "clsx";
 import type { Module, Resource } from "@/data/trackData";
@@ -7,6 +7,7 @@ const typeConfig: Record<Resource["type"], { icon: typeof Play; color: string; b
   video: { icon: Play, color: "text-destructive", bg: "bg-destructive/10" },
   article: { icon: FileText, color: "text-accent", bg: "bg-accent/10" },
   docs: { icon: BookOpen, color: "text-primary", bg: "bg-primary/10" },
+  tool: { icon: Wrench, color: "text-yellow-400", bg: "bg-yellow-400/10" },
 };
 
 interface Props {
