@@ -47,7 +47,7 @@ export default function HeroSection() {
           <span className="block text-6xl sm:text-7xl lg:text-[5.5rem] leading-[1.05] mt-2 text-gradient-primary">
             BUILD.
           </span>
-          <span className="block text-3xl sm:text-4xl lg:text-5xl leading-[1.1] mt-2 text-muted-foreground font-bold">
+          <span className="block text-3xl sm:text-4xl lg:text-5xl leading-[1.1] mt-2 font-bold text-white">
             while you learn.
           </span>
         </h1>
