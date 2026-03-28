@@ -164,7 +164,7 @@ interface RetroEffectProps {
 
 const RetroEffect = forwardRef<unknown, RetroEffectProps>((props, ref) => {
   const { colorNum, pixelSize } = props;
-  return <WrappedRetro ref={ref} colorNum={colorNum} pixelSize={pixelSize} />;
+  return <WrappedRetro ref={ref} colorNum={colorNum} pixelSize={pixelSize} /> as any;
 });
 RetroEffect.displayName = 'RetroEffect';
 
