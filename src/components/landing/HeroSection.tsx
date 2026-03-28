@@ -1,5 +1,8 @@
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
+import { lazy, Suspense } from "react";
+
+const Dither = lazy(() => import("@/components/Dither"));
 
 const stats = [
   { value: "2,400+", label: "BUILDERS" },
@@ -11,9 +14,21 @@ const stats = [
 export default function HeroSection() {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background effects */}
-      <div className="absolute inset-0 bg-grid-pattern" />
-      <div className="absolute inset-0 bg-radial-glow" />
+      {/* Dither background */}
+      <div className="absolute inset-0">
+        <Suspense fallback={<div className="absolute inset-0 bg-background" />}>
+          <Dither
+            waveColor={[0, 0.9, 0.63]}
+            disableAnimation={false}
+            enableMouseInteraction
+            mouseRadius={0.3}
+            colorNum={4}
+            waveAmplitude={0.3}
+            waveFrequency={3}
+            waveSpeed={0.05}
+          />
+        </Suspense>
+      </div>
 
       <div className="container relative z-10 pt-24 pb-20 text-center max-w-4xl mx-auto">
         {/* Beta badge */}
