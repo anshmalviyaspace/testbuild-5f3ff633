@@ -164,7 +164,8 @@ interface RetroEffectProps {
 
 const RetroEffect = forwardRef<unknown, RetroEffectProps>((props, ref) => {
   const { colorNum, pixelSize } = props;
-  return <WrappedRetro ref={ref} colorNum={colorNum} pixelSize={pixelSize} /> as any;
+  // @ts-ignore - wrapEffect typing issue
+  return <WrappedRetro ref={ref} colorNum={colorNum} pixelSize={pixelSize} />;
 });
 RetroEffect.displayName = 'RetroEffect';
 
