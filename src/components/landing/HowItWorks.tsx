@@ -42,7 +42,7 @@ export default function HowItWorks() {
   const [active, setActive] = useState(0);
 
   return (
-    <section className="py-24 border-t border-border">
+    <section className="border-t border-border py-[50px]">
       <div className="container">
         <p className="text-xs font-mono text-primary tracking-widest uppercase mb-3">
           THE PROCESS
@@ -94,7 +94,7 @@ export default function HowItWorks() {
           </div>
 
           {/* Visual panel */}
-          <div className="bg-card border border-border rounded-xl p-10 flex flex-col items-center justify-center min-h-[360px] transition-all duration-300">
+          <div className="bg-card border border-border rounded-xl p-10 flex flex-col items-center justify-center min-h-[360px] transition-all duration-300 py-[40px]">
             <span className="text-6xl mb-6 block animate-float">
               {steps[active].visual}
             </span>
