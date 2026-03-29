@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { lazy, Suspense } from "react";
+import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 
 const Dither = lazy(() => import("@/components/Dither"));
 
