@@ -19,7 +19,7 @@ const projects: Project[] = [
   { id: 3, name: "Prompt Library Tool", author: "Diya S.", college: "NIT Trichy", tags: ["AI", "Open Source"], views: 312, likes: 58 },
   { id: 4, name: "Expense Splitter", author: "Aryan P.", college: "VIT", tags: ["Next.js"], views: 156, likes: 22 },
   { id: 5, name: "Study Buddy Matcher", author: "Karan R.", college: "Manipal", tags: ["ML", "Firebase"], views: 278, likes: 43 },
-  { id: 6, name: "Design System Kit", author: "Priya N.", college: "SRM", tags: ["Figma", "UI/UX"], views: 201, likes: 37 },
+  
 ];
 
 const movingCardItems = projects.map((p) => ({
