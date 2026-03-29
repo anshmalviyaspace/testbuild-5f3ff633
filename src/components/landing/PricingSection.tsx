@@ -69,12 +69,14 @@ export default function PricingSection() {
                 </div>
               ))}
             </div>
-            <Link
+            <HoverBorderGradient
+              as={Link}
               to="/signup"
-              className="block w-full text-center border border-border py-3 rounded-lg text-sm font-medium text-foreground hover:bg-surface2 transition-colors"
+              containerClassName="rounded-lg w-full"
+              className="block w-full text-center text-sm font-medium text-foreground"
             >
               Get Started Free
-            </Link>
+            </HoverBorderGradient>
           </div>
 
           {/* Pro */}
