@@ -14,18 +14,25 @@ export default function FinalCTA() {
           Stop bookmarking tutorials. Start shipping.
         </p>
         <div className="flex items-center justify-center gap-4">
-          <Link
+          <HoverBorderGradient
+            as={Link}
             to="/signup"
-            className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-7 py-3.5 rounded-lg font-semibold hover:bg-primary/90 transition-colors"
+            containerClassName="rounded-lg"
+            className="inline-flex items-center gap-2 font-semibold text-foreground"
           >
             Pick Your Track <ArrowRight size={16} />
-          </Link>
-          <a
-            href="#projects"
-            className="inline-flex items-center gap-2 border border-border px-7 py-3.5 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:border-muted-foreground/50 transition-colors"
+          </HoverBorderGradient>
+          <HoverBorderGradient
+            as="a"
+            containerClassName="rounded-lg"
+            className="inline-flex items-center gap-2 text-sm text-foreground"
+            onClick={(e: React.MouseEvent) => {
+              e.preventDefault();
+              document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" });
+            }}
           >
             See What Others Built
-          </a>
+          </HoverBorderGradient>
         </div>
       </div>
     </section>

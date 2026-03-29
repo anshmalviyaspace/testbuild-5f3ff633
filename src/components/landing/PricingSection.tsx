@@ -100,12 +100,14 @@ export default function PricingSection() {
                 </div>
               ))}
             </div>
-            <Link
+            <HoverBorderGradient
+              as={Link}
               to="/signup"
-              className="block w-full text-center bg-primary text-primary-foreground py-3 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors"
+              containerClassName="rounded-lg w-full"
+              className="block w-full text-center text-sm font-semibold text-foreground"
             >
               Start Pro — ₹299/mo
-            </Link>
+            </HoverBorderGradient>
           </div>
         </div>
       </div>

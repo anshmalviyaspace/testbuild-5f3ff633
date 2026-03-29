@@ -61,18 +61,25 @@ export default function HeroSection() {
 
         {/* Buttons */}
         <div className="mt-10 flex items-center justify-center gap-4 animate-fade-in-up opacity-0 stagger-4">
-          <Link
+          <HoverBorderGradient
+            as={Link}
             to="/signup"
-            className="inline-flex items-center gap-2 text-primary-foreground px-7 py-3.5 rounded-lg font-semibold transition-colors bg-white"
+            containerClassName="rounded-lg"
+            className="inline-flex items-center gap-2 font-semibold text-foreground"
           >
             Start Building <ArrowRight size={16} />
-          </Link>
-          <a
-            href="#projects"
-            className="inline-flex items-center gap-2 border px-7 py-3.5 rounded-lg text-sm transition-colors text-white border-white"
+          </HoverBorderGradient>
+          <HoverBorderGradient
+            as="a"
+            containerClassName="rounded-lg"
+            className="inline-flex items-center gap-2 text-sm text-foreground"
+            onClick={(e: React.MouseEvent) => {
+              e.preventDefault();
+              document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" });
+            }}
           >
             See Projects
-          </a>
+          </HoverBorderGradient>
         </div>
 
         {/* Stats row */}
