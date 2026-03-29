@@ -5,11 +5,11 @@ import { lazy, Suspense } from "react";
 const Dither = lazy(() => import("@/components/Dither"));
 
 const stats = [
-  { value: "2,400+", label: "BUILDERS" },
-  { value: "180+", label: "PROJECTS SHIPPED" },
-  { value: "12", label: "COLLEGES" },
-  { value: "4", label: "TRACKS" },
-];
+{ value: "2,400+", label: "BUILDERS" },
+{ value: "180+", label: "PROJECTS SHIPPED" },
+{ value: "12", label: "COLLEGES" },
+{ value: "4", label: "TRACKS" }];
+
 
 export default function HeroSection() {
   return (
@@ -25,12 +25,12 @@ export default function HeroSection() {
             colorNum={4}
             waveAmplitude={0.3}
             waveFrequency={3}
-            waveSpeed={0.05}
-          />
+            waveSpeed={0.05} />
+          
         </Suspense>
       </div>
 
-      <div className="container relative z-10 pt-24 pb-20 text-center max-w-4xl mx-auto">
+      <div className="container relative z-10 pt-24 pb-20 max-w-4xl mx-auto text-center py-[55px]">
         {/* Beta badge */}
         <div className="inline-flex items-center gap-2 border border-primary/40 rounded-full px-4 py-1.5 mb-8 animate-fade-in opacity-0 animate-glow-pulse">
           <span className="w-1.5 h-1.5 rounded-full bg-primary" />
@@ -62,30 +62,30 @@ export default function HeroSection() {
         <div className="mt-10 flex items-center justify-center gap-4 animate-fade-in-up opacity-0 stagger-4">
           <Link
             to="/signup"
-            className="inline-flex items-center gap-2 text-primary-foreground px-7 py-3.5 rounded-lg font-semibold transition-colors bg-white"
-          >
+            className="inline-flex items-center gap-2 text-primary-foreground px-7 py-3.5 rounded-lg font-semibold transition-colors bg-white">
+            
             Start Building <ArrowRight size={16} />
           </Link>
           <a
             href="#projects"
-            className="inline-flex items-center gap-2 border px-7 py-3.5 rounded-lg text-sm transition-colors text-white border-white"
-          >
+            className="inline-flex items-center gap-2 border px-7 py-3.5 rounded-lg text-sm transition-colors text-white border-white">
+            
             See Projects
           </a>
         </div>
 
         {/* Stats row */}
         <div className="mt-16 grid grid-cols-2 sm:grid-cols-4 gap-6 max-w-2xl mx-auto animate-fade-in-up opacity-0 stagger-5">
-          {stats.map(({ value, label }) => (
-            <div key={label}>
+          {stats.map(({ value, label }) =>
+          <div key={label}>
               <p className="text-2xl font-heading font-bold">{value}</p>
               <p className="text-[10px] font-mono tracking-widest mt-1 text-white">
                 {label}
               </p>
             </div>
-          ))}
+          )}
         </div>
       </div>
-    </section>
-  );
+    </section>);
+
 }
