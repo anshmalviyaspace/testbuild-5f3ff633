@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { lazy, Suspense } from "react";
-import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 
 const Dither = lazy(() => import("@/components/Dither"));
 
@@ -31,7 +30,7 @@ export default function HeroSection() {
         </Suspense>
       </div>
 
-      <div className="container relative z-10 pt-24 pb-20 text-center max-w-4xl mx-auto py-[50px]">
+      <div className="container relative z-10 pt-24 pb-20 text-center max-w-4xl mx-auto">
         {/* Beta badge */}
         <div className="inline-flex items-center gap-2 border border-primary/40 rounded-full px-4 py-1.5 mb-8 animate-fade-in opacity-0 animate-glow-pulse">
           <span className="w-1.5 h-1.5 rounded-full bg-primary" />
@@ -61,25 +60,18 @@ export default function HeroSection() {
 
         {/* Buttons */}
         <div className="mt-10 flex items-center justify-center gap-4 animate-fade-in-up opacity-0 stagger-4">
-          <HoverBorderGradient
-            as={Link}
+          <Link
             to="/signup"
-            containerClassName="rounded-lg"
-            className="inline-flex items-center gap-2 font-semibold text-foreground"
+            className="inline-flex items-center gap-2 text-primary-foreground px-7 py-3.5 rounded-lg font-semibold transition-colors bg-white"
           >
             Start Building <ArrowRight size={16} />
-          </HoverBorderGradient>
-          <HoverBorderGradient
-            as="a"
-            containerClassName="rounded-lg"
-            className="inline-flex items-center gap-2 text-sm text-foreground"
-            onClick={(e: React.MouseEvent) => {
-              e.preventDefault();
-              document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" });
-            }}
+          </Link>
+          <a
+            href="#projects"
+            className="inline-flex items-center gap-2 border px-7 py-3.5 rounded-lg text-sm transition-colors text-white border-white"
           >
             See Projects
-          </HoverBorderGradient>
+          </a>
         </div>
 
         {/* Stats row */}

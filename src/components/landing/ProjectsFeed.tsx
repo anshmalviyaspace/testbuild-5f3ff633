@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Heart, Eye } from "lucide-react";
 import ProjectModal from "./ProjectModal";
-import { InfiniteMovingCards } from "@/components/ui/infinite-moving-cards";
 
 export interface Project {
   id: number;
@@ -19,14 +18,8 @@ const projects: Project[] = [
   { id: 3, name: "Prompt Library Tool", author: "Diya S.", college: "NIT Trichy", tags: ["AI", "Open Source"], views: 312, likes: 58 },
   { id: 4, name: "Expense Splitter", author: "Aryan P.", college: "VIT", tags: ["Next.js"], views: 156, likes: 22 },
   { id: 5, name: "Study Buddy Matcher", author: "Karan R.", college: "Manipal", tags: ["ML", "Firebase"], views: 278, likes: 43 },
-  
+  { id: 6, name: "Design System Kit", author: "Priya N.", college: "SRM", tags: ["Figma", "UI/UX"], views: 201, likes: 37 },
 ];
-
-const movingCardItems = projects.map((p) => ({
-  quote: `${p.name} — built with ${p.tags.join(", ")}. ${p.views} views, ${p.likes} likes.`,
-  name: p.author,
-  title: p.college,
-}));
 
 export default function ProjectsFeed() {
   const [likedIds, setLikedIds] = useState<Set<number>>(new Set());
@@ -43,27 +36,15 @@ export default function ProjectsFeed() {
   };
 
   return (
-    <section id="projects" className="border-t border-border py-[50px]">
+    <section id="projects" className="py-24 border-t border-border">
       <div className="container">
         <p className="text-xs font-mono text-primary tracking-widest uppercase mb-3">
           BUILT BY STUDENTS
         </p>
-        <h2 className="font-heading text-3xl sm:text-4xl font-bold mb-8">
+        <h2 className="font-heading text-3xl sm:text-4xl font-bold mb-12">
           What builders are shipping
         </h2>
-      </div>
 
-      {/* Infinite scrolling marquee */}
-      <div className="mb-12">
-        <InfiniteMovingCards
-          items={movingCardItems}
-          direction="left"
-          speed="slow"
-          pauseOnHover
-        />
-      </div>
-
-      <div className="container">
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {projects.map((p) => {
             const liked = likedIds.has(p.id);
@@ -73,6 +54,7 @@ export default function ProjectsFeed() {
                 onClick={() => setSelectedProject(p)}
                 className="group bg-card border border-border rounded-xl p-5 card-hover-glow cursor-pointer"
               >
+                {/* Faux thumbnail */}
                 <div className="h-32 bg-surface2 rounded-lg mb-4 flex items-center justify-center">
                   <span className="text-3xl opacity-40 group-hover:opacity-60 transition-opacity">
                     {p.tags[0] === "AI" || p.tags[0] === "ML" ? "🤖" : p.tags[0] === "React" || p.tags[0] === "Next.js" ? "💻" : "🎨"}

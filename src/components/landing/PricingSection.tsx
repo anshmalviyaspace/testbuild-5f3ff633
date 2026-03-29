@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { Check, X } from "lucide-react";
-import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 
 const freePlan = {
   name: "Builder",
@@ -33,7 +32,7 @@ const proPlan = {
 
 export default function PricingSection() {
   return (
-    <section id="pricing" className="border-t border-border py-[50px]">
+    <section id="pricing" className="py-24 border-t border-border">
       <div className="container max-w-4xl mx-auto">
         <div className="text-center mb-12">
           <p className="text-xs font-mono text-primary tracking-widest uppercase mb-3">
@@ -69,14 +68,12 @@ export default function PricingSection() {
                 </div>
               ))}
             </div>
-            <HoverBorderGradient
-              as={Link}
+            <Link
               to="/signup"
-              containerClassName="rounded-lg w-full"
-              className="block w-full text-center text-sm font-medium text-foreground"
+              className="block w-full text-center border border-border py-3 rounded-lg text-sm font-medium text-foreground hover:bg-surface2 transition-colors"
             >
               Get Started Free
-            </HoverBorderGradient>
+            </Link>
           </div>
 
           {/* Pro */}
@@ -100,14 +97,12 @@ export default function PricingSection() {
                 </div>
               ))}
             </div>
-            <HoverBorderGradient
-              as={Link}
+            <Link
               to="/signup"
-              containerClassName="rounded-lg w-full"
-              className="block w-full text-center text-sm font-semibold text-foreground"
+              className="block w-full text-center bg-primary text-primary-foreground py-3 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors"
             >
               Start Pro — ₹299/mo
-            </HoverBorderGradient>
+            </Link>
           </div>
         </div>
       </div>
