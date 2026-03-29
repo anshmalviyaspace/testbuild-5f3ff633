@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import clsx from "clsx";
+import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 
 const navLinks = [
   { label: "Tracks", href: "#tracks" },
@@ -50,12 +51,14 @@ export default function Navbar() {
         </nav>
 
         {/* CTA */}
-        <Link
+        <HoverBorderGradient
+          as={Link}
           to="/signup"
-          className="text-primary-foreground px-5 py-2 rounded-lg text-sm font-semibold transition-colors bg-white"
+          containerClassName="rounded-lg"
+          className="text-sm font-semibold text-foreground"
         >
           Start Building
-        </Link>
+        </HoverBorderGradient>
       </div>
     </header>
   );
