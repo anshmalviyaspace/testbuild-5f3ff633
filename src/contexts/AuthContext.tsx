@@ -35,7 +35,10 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [currentUser, setCurrentUser] = useState<User | null>(defaultUser);
+  const [currentUser, setCurrentUser] = useState<User | null>(() => {
+    const stored = localStorage.getItem("buildhub_user");
+    return stored ? JSON.parse(stored) : null;
+  });
   const [signupData, setSignupDataState] = useState<SignupData | null>(null);
 
   const setSignupData = (data: SignupData) => setSignupDataState(data);
