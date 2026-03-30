@@ -20,6 +20,15 @@ export default function DashboardLayout() {
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [quizResult, setQuizResult] = useState<{ personality_type: string } | null>(null);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("buildhub_quiz_results");
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      setQuizResult({ personality_type: parsed.personality_type });
+    }
+  }, []);
 
   const handleLogout = () => { logout(); navigate("/"); };
 
