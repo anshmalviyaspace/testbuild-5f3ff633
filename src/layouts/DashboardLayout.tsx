@@ -61,6 +61,7 @@ export default function DashboardLayout() {
               <p className="text-[10px] font-mono text-muted-foreground">{currentUser.xpPoints} XP</p>
             </div>
           )}
+        </div>
       )}
       <nav className="flex-1 p-3 space-y-0.5">
         {navItems.map(({ to, label, icon: Icon }) => (
