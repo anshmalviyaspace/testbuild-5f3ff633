@@ -1,7 +1,9 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import clsx from "clsx";
 import ConfettiEffect from "@/components/onboarding/ConfettiEffect";
 
@@ -34,16 +36,19 @@ const tracks = [
 
 export default function OnboardingPage() {
   const navigate = useNavigate();
-  const { signupData, login } = useAuth();
+  const { signupData } = useAuth();
+  const { toast } = useToast();
+
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState<"right" | "left">("right");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Step 1 state
   const [selectedTrack, setSelectedTrack] = useState<number | null>(null);
 
   // Step 2 state
   const autoUsername = useMemo(() => {
-    if (!signupData) return "user";
+    if (!signupData) return "builder";
     return signupData.fullName
       .toLowerCase()
       .replace(/\s+/g, "")
@@ -56,38 +61,90 @@ export default function OnboardingPage() {
 
   const firstName = signupData?.fullName?.split(" ")[0] || "Builder";
 
-  const goNext = () => {
-    setDirection("right");
-    setStep((s) => s + 1);
-  };
+  const goNext = () => { setDirection("right"); setStep((s) => s + 1); };
+  const goBack = () => { setDirection("left"); setStep((s) => s - 1); };
 
-  const goBack = () => {
-    setDirection("left");
-    setStep((s) => s - 1);
-  };
+  const handleFinish = async () => {
+    if (!signupData) {
+      // Guard: if they landed here without signup data, send them to signup
+      navigate("/signup");
+      return;
+    }
 
-  const handleFinish = () => {
+    setIsSubmitting(true);
+
     const track = selectedTrack !== null ? tracks[selectedTrack] : tracks[0];
-    const initials = (signupData?.fullName || "BU")
+    const initials = signupData.fullName
       .split(" ")
       .map((w) => w[0])
       .join("")
       .toUpperCase()
       .slice(0, 2);
 
-    login({
-      id: `u_${Date.now()}`,
-      fullName: signupData?.fullName || "Builder",
-      username: username || autoUsername,
-      college: college || signupData?.college || "",
-      currentTrack: track.name,
-      xpPoints: 0,
-      streakDays: 0,
-      avatarInitials: initials,
-      bio,
-      email: signupData?.email,
+    // 1. Create the Supabase auth user
+    const { data: authData, error: signUpError } = await supabase.auth.signUp({
+      email: signupData.email,
+      password: signupData.password,
+      options: {
+        // Pass basic profile info so we can use it in a DB trigger if needed
+        data: {
+          full_name: signupData.fullName,
+        },
+      },
     });
 
+    if (signUpError) {
+      setIsSubmitting(false);
+      if (signUpError.message.includes("already registered")) {
+        toast({
+          title: "Email already in use",
+          description: "Try logging in instead.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Signup failed",
+          description: signUpError.message,
+          variant: "destructive",
+        });
+      }
+      return;
+    }
+
+    const userId = authData.user?.id;
+    if (!userId) {
+      setIsSubmitting(false);
+      toast({ title: "Something went wrong", description: "Please try again.", variant: "destructive" });
+      return;
+    }
+
+    // 2. Insert the profile row into `profiles`
+    const { error: profileError } = await supabase.from("profiles").insert({
+      id: userId,
+      full_name: signupData.fullName,
+      username: username || autoUsername,
+      college: college || signupData.college,
+      current_track: track.name,
+      xp_points: 0,
+      streak_days: 0,
+      avatar_initials: initials,
+      bio: bio || null,
+      email: signupData.email,
+    });
+
+    if (profileError) {
+      // Profile insert failed — still continue, user can fix in Settings
+      console.error("Profile insert error:", profileError.message);
+      toast({
+        title: "Account created!",
+        description: "We had trouble saving your profile — you can update it in Settings.",
+      });
+    }
+
+    setIsSubmitting(false);
+
+    // 3. AuthContext onAuthStateChange will automatically pick up the new session.
+    //    Navigate to the quiz to complete setup.
     navigate("/quiz");
   };
 
@@ -186,7 +243,14 @@ export default function OnboardingPage() {
                 <input
                   type="text"
                   value={username}
-                  onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, "").slice(0, 20))}
+                  onChange={(e) =>
+                    setUsername(
+                      e.target.value
+                        .toLowerCase()
+                        .replace(/[^a-z0-9_]/g, "")
+                        .slice(0, 20)
+                    )
+                  }
                   maxLength={20}
                   className="w-full mt-1.5 bg-surface border border-border rounded-lg px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary transition-shadow"
                 />
@@ -235,7 +299,13 @@ export default function OnboardingPage() {
               </button>
               <button
                 onClick={goNext}
-                className="flex items-center gap-2 bg-primary text-primary-foreground px-7 py-3 rounded-lg font-semibold text-sm hover:bg-primary/90 transition-colors"
+                disabled={!username.trim()}
+                className={clsx(
+                  "flex items-center gap-2 px-7 py-3 rounded-lg font-semibold text-sm transition-all",
+                  username.trim()
+                    ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                    : "bg-border text-muted-foreground cursor-not-allowed"
+                )}
               >
                 Continue <ArrowRight size={16} />
               </button>
@@ -243,7 +313,7 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        {/* STEP 3: All set */}
+        {/* STEP 3: All set — confirm + create account */}
         {step === 2 && (
           <div key="step2" className={clsx(animClass, "max-w-md mx-auto text-center")}>
             <ConfettiEffect />
@@ -296,15 +366,25 @@ export default function OnboardingPage() {
             <div className="flex items-center justify-center gap-4">
               <button
                 onClick={goBack}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                disabled={isSubmitting}
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors disabled:opacity-40"
               >
                 ← Back
               </button>
               <button
                 onClick={handleFinish}
-                className="flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3.5 rounded-lg font-semibold text-sm hover:bg-primary/90 transition-colors"
+                disabled={isSubmitting}
+                className="flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3.5 rounded-lg font-semibold text-sm hover:bg-primary/90 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                Enter Buildhub <ArrowRight size={16} />
+                {isSubmitting ? (
+                  <>
+                    <Loader2 size={16} className="animate-spin" /> Creating account…
+                  </>
+                ) : (
+                  <>
+                    Enter Buildhub <ArrowRight size={16} />
+                  </>
+                )}
               </button>
             </div>
           </div>
