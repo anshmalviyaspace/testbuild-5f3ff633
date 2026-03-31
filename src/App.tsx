@@ -20,6 +20,7 @@ import PortfolioView from "@/pages/dashboard/PortfolioView";
 import SettingsView from "@/pages/dashboard/SettingsView";
 import PublicProfilePage from "@/pages/PublicProfilePage";
 import NotFound from "@/pages/NotFound";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -31,21 +32,27 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
+            {/* Public routes */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/onboarding" element={<OnboardingPage />} />
             <Route path="/quiz" element={<QuizPage />} />
             <Route path="/quiz/results" element={<QuizResultsPage />} />
-            <Route path="/dashboard" element={<DashboardLayout />}>
-              <Route path="home" element={<HomeView />} />
-              <Route path="track" element={<TrackView />} />
-              <Route path="projects" element={<ProjectsView />} />
-              <Route path="community" element={<CommunityView />} />
-              <Route path="portfolio" element={<PortfolioView />} />
-              <Route path="settings" element={<SettingsView />} />
-            </Route>
             <Route path="/profile/:username" element={<PublicProfilePage />} />
+
+            {/* Protected dashboard routes — redirect to /login if not authenticated */}
+            <Route element={<ProtectedRoute />}>
+              <Route path="/dashboard" element={<DashboardLayout />}>
+                <Route path="home" element={<HomeView />} />
+                <Route path="track" element={<TrackView />} />
+                <Route path="projects" element={<ProjectsView />} />
+                <Route path="community" element={<CommunityView />} />
+                <Route path="portfolio" element={<PortfolioView />} />
+                <Route path="settings" element={<SettingsView />} />
+              </Route>
+            </Route>
+
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
