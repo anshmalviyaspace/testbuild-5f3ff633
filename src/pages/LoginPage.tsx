@@ -1,18 +1,27 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { isAuthenticated, currentUser, isLoading } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>({});
+
+  // If already authenticated, redirect to dashboard
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      navigate("/dashboard/home", { replace: true });
+    }
+  }, [isAuthenticated, isLoading, navigate]);
 
   const validate = () => {
     const e: typeof errors = {};
@@ -27,7 +36,7 @@ export default function LoginPage() {
     e.preventDefault();
     if (!validate()) return;
 
-    setIsLoading(true);
+    setIsSubmitting(true);
     setErrors({});
 
     const { error } = await supabase.auth.signInWithPassword({
@@ -35,10 +44,8 @@ export default function LoginPage() {
       password,
     });
 
-    setIsLoading(false);
-
     if (error) {
-      // Map Supabase error messages to friendly ones
+      setIsSubmitting(false);
       if (error.message.includes("Invalid login credentials")) {
         setErrors({ general: "Incorrect email or password. Please try again." });
       } else if (error.message.includes("Email not confirmed")) {
@@ -49,10 +56,10 @@ export default function LoginPage() {
       return;
     }
 
-    // AuthContext's onAuthStateChange will handle loading the profile.
-    // ProtectedRoute will let us through once currentUser is set.
+    // Auth state change listener will update the session & profile.
+    // The useEffect above will navigate once isAuthenticated becomes true.
     toast({ title: "Welcome back! 👋" });
-    navigate("/dashboard/home");
+    setIsSubmitting(false);
   };
 
   const inputBase =
@@ -65,7 +72,6 @@ export default function LoginPage() {
         <div className="absolute inset-0 bg-grid-pattern opacity-60" />
         <div className="absolute inset-0 bg-radial-glow" />
 
-        {/* Logo */}
         <div className="relative z-10">
           <Link to="/" className="flex items-center gap-2">
             <span className="font-heading text-xl font-extrabold tracking-tight">
@@ -75,7 +81,6 @@ export default function LoginPage() {
           </Link>
         </div>
 
-        {/* Quote */}
         <div className="relative z-10 max-w-lg">
           <blockquote className="font-heading text-3xl xl:text-4xl font-bold leading-tight text-balance">
             "Every expert was once a{" "}
@@ -83,7 +88,6 @@ export default function LoginPage() {
           </blockquote>
         </div>
 
-        {/* Bottom badge */}
         <div className="relative z-10">
           <span className="inline-flex items-center gap-2 text-xs font-mono text-muted-foreground border border-border px-3 py-1.5 rounded-full">
             <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse-dot" />
@@ -112,7 +116,6 @@ export default function LoginPage() {
             Log in to continue building.
           </p>
 
-          {/* General error banner */}
           {errors.general && (
             <div className="mb-5 bg-destructive/10 border border-destructive/20 text-destructive text-sm font-mono px-4 py-3 rounded-lg">
               {errors.general}
@@ -120,34 +123,22 @@ export default function LoginPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Email */}
             <div>
-              <label className="text-xs font-mono text-muted-foreground uppercase tracking-wider">
-                Email
-              </label>
+              <label className="text-xs font-mono text-muted-foreground uppercase tracking-wider">Email</label>
               <input
                 type="email"
                 value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  setErrors((p) => ({ ...p, email: undefined, general: undefined }));
-                }}
+                onChange={(e) => { setEmail(e.target.value); setErrors((p) => ({ ...p, email: undefined, general: undefined })); }}
                 placeholder="rahul@example.com"
                 autoComplete="email"
                 className={inputBase}
               />
-              {errors.email && (
-                <p className="text-xs text-destructive mt-1 font-mono">{errors.email}</p>
-              )}
+              {errors.email && <p className="text-xs text-destructive mt-1 font-mono">{errors.email}</p>}
             </div>
 
-            {/* Password */}
             <div>
               <div className="flex items-center justify-between">
-                <label className="text-xs font-mono text-muted-foreground uppercase tracking-wider">
-                  Password
-                </label>
-                {/* Placeholder for future forgot-password flow */}
+                <label className="text-xs font-mono text-muted-foreground uppercase tracking-wider">Password</label>
                 <button
                   type="button"
                   className="text-[11px] font-mono text-muted-foreground hover:text-primary transition-colors"
@@ -160,10 +151,7 @@ export default function LoginPage() {
                 <input
                   type={showPassword ? "text" : "password"}
                   value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                    setErrors((p) => ({ ...p, password: undefined, general: undefined }));
-                  }}
+                  onChange={(e) => { setPassword(e.target.value); setErrors((p) => ({ ...p, password: undefined, general: undefined })); }}
                   placeholder="Your password"
                   autoComplete="current-password"
                   className={`${inputBase} pr-11`}
@@ -176,33 +164,25 @@ export default function LoginPage() {
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
-              {errors.password && (
-                <p className="text-xs text-destructive mt-1 font-mono">{errors.password}</p>
-              )}
+              {errors.password && <p className="text-xs text-destructive mt-1 font-mono">{errors.password}</p>}
             </div>
 
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isSubmitting}
               className="w-full bg-primary text-primary-foreground py-3 rounded-lg font-semibold text-sm hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {isLoading ? (
-                <>
-                  <Loader2 size={16} className="animate-spin" /> Logging in…
-                </>
+              {isSubmitting ? (
+                <><Loader2 size={16} className="animate-spin" /> Logging in…</>
               ) : (
-                <>
-                  Log In <ArrowRight size={16} />
-                </>
+                <>Log In <ArrowRight size={16} /></>
               )}
             </button>
           </form>
 
           <p className="mt-6 text-center text-sm text-muted-foreground">
             Don't have an account?{" "}
-            <Link to="/signup" className="text-primary hover:underline font-medium">
-              Sign up →
-            </Link>
+            <Link to="/signup" className="text-primary hover:underline font-medium">Sign up →</Link>
           </p>
         </div>
       </div>

@@ -3,19 +3,15 @@ import { useAuth } from "@/contexts/AuthContext";
 
 /**
  * Wraps routes that require authentication.
- * - While auth is initializing (page refresh), shows a minimal loading screen.
- * - If not authenticated, redirects to /login.
- * - If authenticated, renders the child route via <Outlet />.
+ * Shows loader while auth initializes, redirects to /login if unauthenticated.
  */
 export default function ProtectedRoute() {
   const { isAuthenticated, isLoading } = useAuth();
 
-  // Don't redirect until Supabase has finished restoring the session
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
-          {/* Animated logo */}
           <span className="font-heading text-xl font-extrabold tracking-tight">
             Build<span className="text-foreground">hub</span>
           </span>
