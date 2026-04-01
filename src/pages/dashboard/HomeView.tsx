@@ -36,12 +36,11 @@ function HomeSkeletonLoader() {
 }
 
 export default function HomeView() {
-  const { currentUser } = useAuth();
+  const { currentUser, isLoading: authLoading } = useAuth();
   const [loading, setLoading] = useState(true);
   const [quizResult, setQuizResult] = useState<{ personality_type: string; score: number; level: string } | null>(null);
 
   useEffect(() => {
-    // Load quiz results from localStorage
     const stored = localStorage.getItem("buildhub_quiz_results");
     if (stored) {
       const parsed = JSON.parse(stored);
@@ -51,12 +50,12 @@ export default function HomeView() {
         level: parsed.level,
       });
     }
-    const t = setTimeout(() => setLoading(false), 800);
+    const t = setTimeout(() => setLoading(false), 500);
     return () => clearTimeout(t);
   }, []);
 
-  if (!currentUser) return null;
-  if (loading) return <HomeSkeletonLoader />;
+  if (authLoading || loading) return <HomeSkeletonLoader />;
+  if (!currentUser) return <HomeSkeletonLoader />;
 
   const firstName = currentUser.fullName.split(" ")[0];
 

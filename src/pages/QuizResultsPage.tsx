@@ -71,7 +71,7 @@ function ScoreRing({ score, size = 120 }: { score: number; size?: number }) {
 
 export default function QuizResultsPage() {
   const navigate = useNavigate();
-  const { currentUser } = useAuth();
+  const { currentUser, isLoading } = useAuth();
   const [result, setResult] = useState<QuizResult | null>(null);
 
   useEffect(() => {
@@ -83,7 +83,21 @@ export default function QuizResultsPage() {
     setResult(JSON.parse(stored));
   }, [navigate]);
 
-  if (!result || !currentUser) return null;
+  if (!result) return null;
+
+  // Show loader while profile is loading
+  if (isLoading || !currentUser) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <span className="font-heading text-xl font-extrabold tracking-tight">
+            Build<span className="text-foreground">hub</span>
+          </span>
+          <div className="w-5 h-5 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+        </div>
+      </div>
+    );
+  }
 
   const technicalAnswers = result.answers.filter(a => a.category === "technical");
   const advice = PERSONALITY_ADVICE[result.personality_type] || PERSONALITY_ADVICE["The Explorer"];

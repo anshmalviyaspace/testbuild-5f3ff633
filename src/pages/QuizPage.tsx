@@ -437,9 +437,14 @@ export default function QuizPage() {
             <div className="flex justify-end mt-6 animate-fade-in opacity-0">
               <button
                 onClick={handleNext}
-                className="flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg text-sm font-semibold font-heading hover:bg-primary/90 transition-colors"
+                disabled={saving}
+                className="flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg text-sm font-semibold font-heading hover:bg-primary/90 transition-colors disabled:opacity-60"
               >
-                {currentIndex >= totalQuestions - 1 ? "See My Results" : "Next"} <ArrowRight size={16} />
+                {saving ? (
+                  <><span className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" /> Saving…</>
+                ) : (
+                  <>{currentIndex >= totalQuestions - 1 ? "See My Results" : "Next"} <ArrowRight size={16} /></>
+                )}
               </button>
             </div>
           )}
