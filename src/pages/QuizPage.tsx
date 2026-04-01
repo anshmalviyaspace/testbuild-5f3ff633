@@ -100,7 +100,7 @@ function SectionTransition({ category, onComplete }: { category: string; onCompl
 
 export default function QuizPage() {
   const navigate = useNavigate();
-  const { currentUser } = useAuth();
+  const { currentUser, refreshProfile } = useAuth();
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
