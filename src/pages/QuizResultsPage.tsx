@@ -71,7 +71,7 @@ function ScoreRing({ score, size = 120 }: { score: number; size?: number }) {
 
 export default function QuizResultsPage() {
   const navigate = useNavigate();
-  const { currentUser, login } = useAuth();
+  const { currentUser } = useAuth();
   const [result, setResult] = useState<QuizResult | null>(null);
 
   useEffect(() => {
