@@ -14,7 +14,7 @@ const trackOptions = [
 const avatarEmojis = ["😎", "🧑‍💻", "🦊", "🐱", "🤖", "👾", "🎯", "🔥", "🧠", "⚡", "🌈", "🎨"];
 
 export default function SettingsView() {
-  const { currentUser, login, logout } = useAuth();
+  const { currentUser, logout, refreshProfile } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
