@@ -1,8 +1,7 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
 import { Session, User as SupabaseUser } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
-// The shape of a user profile loaded from the `profiles` table
 export interface User {
   id: string;
   fullName: string;
@@ -16,7 +15,6 @@ export interface User {
   email?: string;
 }
 
-// Temporary data held between SignupPage → OnboardingPage → Supabase signup
 export interface SignupData {
   fullName: string;
   college: string;
@@ -29,15 +27,14 @@ interface AuthContextType {
   session: Session | null;
   signupData: SignupData | null;
   isAuthenticated: boolean;
-  isLoading: boolean; // true while we're waiting for Supabase to restore session
+  isLoading: boolean;
   setSignupData: (data: SignupData) => void;
   logout: () => Promise<void>;
-  refreshProfile: () => Promise<void>; // call this after updating the profile
+  refreshProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Helper: turn a raw `profiles` row into our typed User object
 function rowToUser(row: any, email?: string): User {
   return {
     id: row.id,
@@ -57,60 +54,76 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [signupData, setSignupDataState] = useState<SignupData | null>(null);
-  // Start as true so the app doesn't flash the login page on refresh
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load the profile row for a given Supabase user
-  const loadProfile = async (supabaseUser: SupabaseUser) => {
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", supabaseUser.id)
-      .single();
+  const loadProfile = useCallback(async (supabaseUser: SupabaseUser) => {
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", supabaseUser.id)
+        .single();
 
-    if (error || !data) {
-      // Profile might not exist yet (e.g. mid-onboarding) — that's okay
+      if (error || !data) {
+        console.warn("Profile not found for user:", supabaseUser.id, error?.message);
+        setCurrentUser(null);
+        return;
+      }
+
+      setCurrentUser(rowToUser(data, supabaseUser.email));
+    } catch (err) {
+      console.error("Error loading profile:", err);
       setCurrentUser(null);
-      return;
     }
+  }, []);
 
-    setCurrentUser(rowToUser(data, supabaseUser.email));
-  };
-
-  // Re-fetch the profile from Supabase (call after settings updates)
-  const refreshProfile = async () => {
-    if (!session?.user) return;
-    await loadProfile(session.user);
-  };
+  const refreshProfile = useCallback(async () => {
+    const { data: { session: currentSession } } = await supabase.auth.getSession();
+    if (currentSession?.user) {
+      await loadProfile(currentSession.user);
+    }
+  }, [loadProfile]);
 
   useEffect(() => {
-    // 1. Subscribe to auth state changes (login, logout, token refresh)
+    let mounted = true;
+
+    // 1. Set up the auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, newSession) => {
+        if (!mounted) return;
+
         setSession(newSession);
 
         if (newSession?.user) {
-          await loadProfile(newSession.user);
+          // Use setTimeout to avoid Supabase deadlock on simultaneous calls
+          setTimeout(async () => {
+            if (!mounted) return;
+            await loadProfile(newSession.user);
+            if (mounted) setIsLoading(false);
+          }, 0);
         } else {
           setCurrentUser(null);
+          setIsLoading(false);
         }
-
-        setIsLoading(false);
       }
     );
 
-    // 2. Check for an existing session on mount (handles page refresh)
-    supabase.auth.getSession().then(({ data: { session: existingSession } }) => {
+    // 2. Get the initial session
+    supabase.auth.getSession().then(async ({ data: { session: existingSession } }) => {
+      if (!mounted) return;
+
       setSession(existingSession);
       if (existingSession?.user) {
-        loadProfile(existingSession.user).finally(() => setIsLoading(false));
-      } else {
-        setIsLoading(false);
+        await loadProfile(existingSession.user);
       }
+      if (mounted) setIsLoading(false);
     });
 
-    return () => subscription.unsubscribe();
-  }, []);
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, [loadProfile]);
 
   const setSignupData = (data: SignupData) => setSignupDataState(data);
 

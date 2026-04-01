@@ -100,7 +100,7 @@ function SectionTransition({ category, onComplete }: { category: string; onCompl
 
 export default function QuizPage() {
   const navigate = useNavigate();
-  const { currentUser, refreshProfile } = useAuth();
+  const { currentUser, session, refreshProfile } = useAuth();
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
@@ -110,15 +110,18 @@ export default function QuizPage() {
   const [showTransition, setShowTransition] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [slideDirection, setSlideDirection] = useState<"in" | "out">("in");
+  const [saving, setSaving] = useState(false);
+
+  const userId = session?.user?.id;
 
   useEffect(() => {
     async function fetchQuestions() {
       // Check if quiz already taken
-      if (currentUser?.id) {
+      if (userId) {
         const { data: profile } = await supabase
           .from("profiles")
           .select("quiz_taken")
-          .eq("id", currentUser.id)
+          .eq("id", userId)
           .single();
         if (profile?.quiz_taken) {
           navigate("/dashboard/home", { replace: true });
@@ -133,6 +136,7 @@ export default function QuizPage() {
 
       if (error) {
         console.error("Error fetching questions:", error);
+        setLoading(false);
         return;
       }
 
@@ -146,7 +150,7 @@ export default function QuizPage() {
       setLoading(false);
     }
     fetchQuestions();
-  }, [currentUser, navigate]);
+  }, [userId, navigate]);
 
   const currentQuestion = questions[currentIndex];
   const totalQuestions = questions.length;
@@ -220,6 +224,13 @@ export default function QuizPage() {
   }, []);
 
   const calculateAndSaveResults = async () => {
+    if (!userId) {
+      console.error("No user ID available for saving quiz results");
+      return;
+    }
+
+    setSaving(true);
+
     const technicalAnswers = answers.filter(a => a.category === "technical");
     const technicalScore = technicalAnswers.reduce((sum, a) => sum + (a.points || 0), 0);
     const finalScore = Math.round((technicalScore / 60) * 100);
@@ -239,7 +250,7 @@ export default function QuizPage() {
 
     const track = currentUser?.currentTrack || "AI & Machine Learning";
 
-    // Save to localStorage for results page (since user might not be in Supabase yet with this mock auth)
+    // Save results to localStorage for the results page
     const resultData = {
       track,
       score: finalScore,
@@ -250,35 +261,35 @@ export default function QuizPage() {
       answers,
       technicalScore,
     };
-
     localStorage.setItem("buildhub_quiz_results", JSON.stringify(resultData));
 
-    // Try to save to Supabase if user has real auth
-    if (currentUser?.id) {
-      try {
-        await supabase.from("quiz_results").upsert({
-          user_id: currentUser.id,
-          track,
-          score: finalScore,
-          level,
-          personality_type: personalityType,
-          personality_description: personalityDescription,
-          category_scores: categoryScores,
-          answers,
-        });
+    // Save to database
+    try {
+      const { error: upsertError } = await supabase.from("quiz_results").upsert({
+        user_id: userId,
+        track,
+        score: finalScore,
+        level,
+        personality_type: personalityType,
+        personality_description: personalityDescription,
+        category_scores: categoryScores,
+        answers,
+      });
+      if (upsertError) console.error("Quiz results upsert error:", upsertError);
 
-        await supabase.from("profiles").update({
-          quiz_score: finalScore,
-          quiz_level: level,
-          personality_type: personalityType,
-          quiz_taken: true,
-        }).eq("id", currentUser.id);
-      } catch (err) {
-        console.error("Error saving quiz results:", err);
-      }
+      const { error: profileError } = await supabase.from("profiles").update({
+        quiz_score: finalScore,
+        quiz_level: level,
+        personality_type: personalityType,
+        quiz_taken: true,
+      }).eq("id", userId);
+      if (profileError) console.error("Profile update error:", profileError);
+    } catch (err) {
+      console.error("Error saving quiz results:", err);
     }
 
     await refreshProfile();
+    setSaving(false);
     navigate("/quiz/results");
   };
 
@@ -426,9 +437,14 @@ export default function QuizPage() {
             <div className="flex justify-end mt-6 animate-fade-in opacity-0">
               <button
                 onClick={handleNext}
-                className="flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg text-sm font-semibold font-heading hover:bg-primary/90 transition-colors"
+                disabled={saving}
+                className="flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg text-sm font-semibold font-heading hover:bg-primary/90 transition-colors disabled:opacity-60"
               >
-                {currentIndex >= totalQuestions - 1 ? "See My Results" : "Next"} <ArrowRight size={16} />
+                {saving ? (
+                  <><span className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" /> Saving…</>
+                ) : (
+                  <>{currentIndex >= totalQuestions - 1 ? "See My Results" : "Next"} <ArrowRight size={16} /></>
+                )}
               </button>
             </div>
           )}

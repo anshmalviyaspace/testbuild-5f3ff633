@@ -4,7 +4,7 @@ import { ArrowRight, PartyPopper } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function PortfolioView() {
-  const { currentUser } = useAuth();
+  const { currentUser, isLoading } = useAuth();
   const [quizResult, setQuizResult] = useState<{ personality_type: string; personality_description: string; score: number; level: string; taken_at?: string } | null>(null);
 
   useEffect(() => {
@@ -20,7 +20,17 @@ export default function PortfolioView() {
     }
   }, []);
 
-  if (!currentUser) return null;
+  if (isLoading || !currentUser) {
+    return (
+      <div className="p-6 sm:p-8 max-w-4xl">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 w-48 bg-surface2 rounded-lg" />
+          <div className="h-4 w-64 bg-surface2 rounded-lg" />
+          <div className="h-40 bg-surface2 rounded-xl" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 sm:p-8 max-w-4xl animate-fade-in opacity-0">
