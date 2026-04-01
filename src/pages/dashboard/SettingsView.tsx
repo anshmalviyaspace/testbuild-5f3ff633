@@ -37,20 +37,24 @@ export default function SettingsView() {
 
   if (!currentUser) return null;
 
-  const handleSaveProfile = () => {
+  const handleSaveProfile = async () => {
     if (!fullName.trim() || !username.trim()) {
       toast({ title: "Missing fields", description: "Name and username are required.", variant: "destructive" });
       return;
     }
     const initials = fullName.trim().split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2);
-    login({
-      ...currentUser,
-      fullName: fullName.trim(),
+    const { error } = await supabase.from("profiles").update({
+      full_name: fullName.trim(),
       username: username.trim().replace(/^@/, ""),
       college: college.trim(),
       bio: bio.trim(),
-      avatarInitials: initials,
-    });
+      avatar_initials: initials,
+    }).eq("id", currentUser.id);
+    if (error) {
+      toast({ title: "Error saving", description: error.message, variant: "destructive" });
+      return;
+    }
+    await refreshProfile();
     toast({ title: "Profile updated ✓", description: "Your changes have been saved." });
   };
 
