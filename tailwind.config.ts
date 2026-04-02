@@ -168,6 +168,8 @@ export default {
         confetti: "confetti 3s ease-in-out forwards",
         "star-movement-bottom": "star-movement-bottom linear infinite alternate",
         "star-movement-top": "star-movement-top linear infinite alternate",
+        marquee: "marquee var(--duration) infinite linear",
+        "marquee-vertical": "marquee-vertical var(--duration) linear infinite",
       },
     },
   },
