@@ -158,6 +158,8 @@ export default {
         "glow-pulse": "glow-pulse 2.5s ease-in-out infinite",
         float: "float 3s ease-in-out infinite",
         confetti: "confetti 3s ease-in-out forwards",
+        "star-movement-bottom": "star-movement-bottom linear infinite alternate",
+        "star-movement-top": "star-movement-top linear infinite alternate",
       },
     },
   },
