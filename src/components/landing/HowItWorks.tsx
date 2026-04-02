@@ -1,4 +1,5 @@
 import { useState } from "react";
+import StarBorder from "@/components/StarBorder";
 
 const steps = [
   {
