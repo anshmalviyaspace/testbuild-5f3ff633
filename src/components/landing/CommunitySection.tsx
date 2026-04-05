@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import MagicRings from "@/components/MagicRings";
 
 const avatarColors = [
   "bg-primary/30",
@@ -12,8 +13,35 @@ const initials = ["RM", "SK", "DS", "AP", "KR", "PN"];
 
 export default function CommunitySection() {
   return (
-    <section id="community" className="border-t border-border py-[50px]">
-      <div className="container max-w-2xl mx-auto text-center">
+    <section id="community" className="border-t border-border py-[50px] relative overflow-hidden">
+      {/* MagicRings background */}
+      <div className="absolute inset-0 pointer-events-auto">
+        <MagicRings
+          color="#ffffff"
+          colorTwo="#292929"
+          ringCount={6}
+          speed={1}
+          attenuation={10}
+          lineThickness={1}
+          baseRadius={0.35}
+          radiusStep={0.19}
+          scaleRate={0.1}
+          opacity={0.6}
+          blur={0}
+          noiseAmount={0.1}
+          rotation={0}
+          ringGap={1.5}
+          fadeIn={0.7}
+          fadeOut={0.5}
+          followMouse
+          mouseInfluence={0.2}
+          hoverScale={1.2}
+          parallax={0.05}
+          clickBurst={false}
+        />
+      </div>
+
+      <div className="container max-w-2xl mx-auto text-center relative z-10">
         {/* Overlapping avatars */}
         <div className="flex items-center justify-center mb-8">
           <div className="flex -space-x-3">
