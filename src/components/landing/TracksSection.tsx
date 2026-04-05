@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
-import StarBorder from "@/components/StarBorder";
+import ElectricBorder from "@/components/ElectricBorder";
 
 const tracks = [
   {
@@ -46,14 +46,15 @@ export default function TracksSection() {
 
         <div className="grid sm:grid-cols-2 gap-5">
           {tracks.map((t) => (
-            <StarBorder
+            <ElectricBorder
               key={t.title}
               color="hsl(160, 100%, 45%)"
-              speed="7s"
-              thickness={1}
-              className="group card-hover-glow"
+              speed={1}
+              chaos={0.08}
+              borderRadius={20}
+              className="group"
             >
-              <div className="p-6 text-left">
+              <div className="p-6 text-left bg-card rounded-[20px]">
                 <span className="text-3xl mb-4 block">{t.emoji}</span>
                 <h3 className="font-heading text-lg font-bold mb-2">{t.title}</h3>
                 <p className="text-sm text-muted-foreground mb-4">{t.desc}</p>
@@ -72,7 +73,7 @@ export default function TracksSection() {
                   Explore Track <ArrowRight size={14} />
                 </Link>
               </div>
-            </StarBorder>
+            </ElectricBorder>
           ))}
         </div>
       </div>
