@@ -24,7 +24,7 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <h3 className="font-heading text-lg font-bold mb-2">
-              <span className="text-primary">Build</span>hub
+              <span className="text-primary">Just</span>Build
             </h3>
             <p className="text-sm text-muted-foreground">
               Build more. Consume less.
@@ -55,7 +55,7 @@ export default function Footer() {
 
         <div className="border-t border-border pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-muted-foreground font-mono">
-            © {new Date().getFullYear()} Buildhub. Made for builders.
+            © {new Date().getFullYear()} JustBuild. Made for builders.
           </p>
           <div className="flex items-center gap-4 text-xs text-muted-foreground font-mono">
             <a href="#" className="hover:text-foreground transition-colors">Twitter</a>

@@ -54,7 +54,7 @@ export default function HeroSection() {
 
         {/* Subtext */}
         <p className="mt-8 text-lg max-w-2xl mx-auto text-pretty animate-fade-in-up opacity-0 stagger-3 text-white">
-          Buildhub is where college students learn AI, design, and tech by shipping real
+          JustBuild is where college students learn AI, design, and tech by shipping real
           projects — not watching videos.
         </p>
 

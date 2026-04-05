@@ -8,7 +8,7 @@ export default function PortfolioView() {
   const [quizResult, setQuizResult] = useState<{ personality_type: string; personality_description: string; score: number; level: string; taken_at?: string } | null>(null);
 
   useEffect(() => {
-    const stored = localStorage.getItem("buildhub_quiz_results");
+    const stored = localStorage.getItem("justbuild_quiz_results");
     if (stored) {
       const parsed = JSON.parse(stored);
       setQuizResult({
@@ -121,7 +121,7 @@ export default function PortfolioView() {
             <div className="flex-1 flex items-center justify-between gap-4">
               <div className="flex items-center gap-2">
                 <PartyPopper size={14} className="text-primary" />
-                <span className="text-sm text-foreground">Joined Buildhub</span>
+                <span className="text-sm text-foreground">Joined JustBuild</span>
               </div>
               <span className="text-[10px] font-mono text-muted-foreground whitespace-nowrap">Just now</span>
             </div>

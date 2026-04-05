@@ -31,7 +31,7 @@ export default function Navbar() {
         {/* Logo */}
         <a href="#" className="flex items-center gap-2">
           <span className="font-heading text-xl font-extrabold tracking-tight">
-            Build<span className="text-foreground">hub</span>
+            Just<span className="text-foreground">Build</span>
           </span>
           <span className="w-2 h-2 rounded-full bg-primary animate-pulse-dot" />
         </a>

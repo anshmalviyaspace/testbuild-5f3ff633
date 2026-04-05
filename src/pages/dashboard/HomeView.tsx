@@ -41,7 +41,7 @@ export default function HomeView() {
   const [quizResult, setQuizResult] = useState<{ personality_type: string; score: number; level: string } | null>(null);
 
   useEffect(() => {
-    const stored = localStorage.getItem("buildhub_quiz_results");
+    const stored = localStorage.getItem("justbuild_quiz_results");
     if (stored) {
       const parsed = JSON.parse(stored);
       setQuizResult({

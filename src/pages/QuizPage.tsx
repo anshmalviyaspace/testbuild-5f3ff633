@@ -261,7 +261,7 @@ export default function QuizPage() {
       answers,
       technicalScore,
     };
-    localStorage.setItem("buildhub_quiz_results", JSON.stringify(resultData));
+    localStorage.setItem("justbuild_quiz_results", JSON.stringify(resultData));
 
     // Save to database
     try {
