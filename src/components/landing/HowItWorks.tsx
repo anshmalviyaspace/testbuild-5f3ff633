@@ -26,7 +26,7 @@ const steps = [
   {
     num: "04",
     title: "Publish to Portfolio",
-    desc: "Your work goes live instantly on your public Buildhub portfolio.",
+    desc: "Your work goes live instantly on your public JustBuild portfolio.",
     visual: "🚀",
     visualLabel: "Live portfolio page",
   },

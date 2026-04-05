@@ -74,7 +74,7 @@ export default function ProjectModal({
           {/* Description */}
           <p className="text-sm text-muted-foreground leading-relaxed">
             A student-built project showcasing real-world application of{" "}
-            {project.tags.join(" & ")} skills. Built as part of the Buildhub
+            {project.tags.join(" & ")} skills. Built as part of the JustBuild
             track curriculum with peer feedback and mentor review.
           </p>
 

@@ -335,7 +335,7 @@ export const initialModules: Module[] = [
         "Add Langfuse for monitoring what prompts real users send",
         "Submit to one of: Product Hunt, Peerlist, IndieHackers, college group",
         "Write a 500-word build log: what you built, what broke, what you learned",
-        "Share your Buildhub portfolio link in the post",
+        "Share your JustBuild portfolio link in the post",
       ],
       techStack: ["Next.js or Streamlit", "Supabase auth + database", "Claude API", "Vercel + Railway", "Langfuse", "Google OAuth"],
       estimatedHours: 25,

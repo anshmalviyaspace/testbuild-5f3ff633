@@ -255,7 +255,7 @@ export default function OnboardingPage() {
                 />
                 <p className="text-xs text-muted-foreground mt-1.5 font-mono">
                   Your profile will be at{" "}
-                  <span className="text-primary">buildhub.io/@{username || "..."}</span>
+                  <span className="text-primary">justbuild.io/@{username || "..."}</span>
                 </p>
               </div>
 
@@ -318,7 +318,7 @@ export default function OnboardingPage() {
             <ConfettiEffect />
 
             <h1 className="font-heading text-3xl sm:text-4xl font-extrabold mb-3">
-              Welcome to Buildhub,{" "}
+              Welcome to JustBuild,{" "}
               <span className="text-gradient-primary">{firstName}!</span>
             </h1>
             <p className="text-sm text-muted-foreground mb-8">
@@ -381,7 +381,7 @@ export default function OnboardingPage() {
                   </>
                 ) : (
                   <>
-                    Enter Buildhub <ArrowRight size={16} />
+                    Enter JustBuild <ArrowRight size={16} />
                   </>
                 )}
               </button>

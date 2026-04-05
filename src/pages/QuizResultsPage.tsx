@@ -75,7 +75,7 @@ export default function QuizResultsPage() {
   const [result, setResult] = useState<QuizResult | null>(null);
 
   useEffect(() => {
-    const stored = localStorage.getItem("buildhub_quiz_results");
+    const stored = localStorage.getItem("justbuild_quiz_results");
     if (!stored) {
       navigate("/quiz", { replace: true });
       return;
@@ -91,7 +91,7 @@ export default function QuizResultsPage() {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <span className="font-heading text-xl font-extrabold tracking-tight">
-            Build<span className="text-foreground">hub</span>
+            Just<span className="text-foreground">Build</span>
           </span>
           <div className="w-5 h-5 rounded-full border-2 border-primary border-t-transparent animate-spin" />
         </div>
@@ -123,7 +123,7 @@ export default function QuizResultsPage() {
   };
 
   const handleRetake = () => {
-    localStorage.removeItem("buildhub_quiz_results");
+    localStorage.removeItem("justbuild_quiz_results");
     navigate("/quiz", { replace: true });
   };
 
@@ -232,7 +232,7 @@ export default function QuizResultsPage() {
             onClick={handleEnter}
             className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3.5 rounded-lg font-semibold text-sm font-heading hover:bg-primary/90 transition-colors"
           >
-            Enter Buildhub <ArrowRight size={16} />
+            Enter JustBuild <ArrowRight size={16} />
           </button>
           <div>
             <button

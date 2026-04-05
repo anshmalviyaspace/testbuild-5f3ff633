@@ -11,7 +11,7 @@ export default function TrackView() {
   const [modules, setModules] = useState<Module[]>(initialModules);
   const [activeModuleId, setActiveModuleId] = useState(4);
   const [checkedResources, setCheckedResources] = useState<Set<string>>(() => {
-    const saved = localStorage.getItem("buildhub_checked_resources");
+    const saved = localStorage.getItem("justbuild_checked_resources");
     return saved ? new Set(JSON.parse(saved)) : new Set();
   });
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -45,7 +45,7 @@ export default function TrackView() {
       const next = new Set(prev);
       if (next.has(resourceId)) next.delete(resourceId);
       else next.add(resourceId);
-      localStorage.setItem("buildhub_checked_resources", JSON.stringify([...next]));
+      localStorage.setItem("justbuild_checked_resources", JSON.stringify([...next]));
       return next;
     });
   }, []);

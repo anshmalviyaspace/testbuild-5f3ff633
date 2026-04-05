@@ -13,7 +13,7 @@ export default function ProtectedRoute() {
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
           <span className="font-heading text-xl font-extrabold tracking-tight">
-            Build<span className="text-foreground">hub</span>
+            Just<span className="text-foreground">Build</span>
           </span>
           <div className="w-5 h-5 rounded-full border-2 border-primary border-t-transparent animate-spin" />
         </div>

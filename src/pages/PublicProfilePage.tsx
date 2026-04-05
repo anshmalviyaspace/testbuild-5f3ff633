@@ -10,7 +10,7 @@ export default function PublicProfilePage() {
   const [quizResult, setQuizResult] = useState<{ personality_type: string; personality_description: string; score: number; level: string } | null>(null);
 
   useEffect(() => {
-    const stored = localStorage.getItem("buildhub_quiz_results");
+    const stored = localStorage.getItem("justbuild_quiz_results");
     if (stored) {
       const parsed = JSON.parse(stored);
       setQuizResult({
@@ -58,7 +58,7 @@ export default function PublicProfilePage() {
       <nav className="border-b border-border bg-surface/80 backdrop-blur-md sticky top-0 z-30">
         <div className="max-w-4xl mx-auto flex items-center justify-between px-6 py-3">
           <Link to="/" className="font-heading text-lg font-extrabold tracking-tight text-foreground">
-            Buildhub
+            JustBuild
           </Link>
           <Link to="/" className="inline-flex items-center gap-1.5 text-xs font-mono text-muted-foreground hover:text-foreground transition-colors">
             <ArrowLeft size={12} /> Back
@@ -173,7 +173,7 @@ export default function PublicProfilePage() {
               <div className="flex-1 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-2">
                   <PartyPopper size={14} className="text-primary" />
-                  <span className="text-sm text-foreground">Joined Buildhub</span>
+                  <span className="text-sm text-foreground">Joined JustBuild</span>
                 </div>
                 <span className="text-[10px] font-mono text-muted-foreground whitespace-nowrap">Just now</span>
               </div>
@@ -189,7 +189,7 @@ export default function PublicProfilePage() {
               to="/signup"
               className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors"
             >
-              Join Buildhub and start building <ExternalLink size={14} />
+              Join JustBuild and start building <ExternalLink size={14} />
             </Link>
           </section>
         )}

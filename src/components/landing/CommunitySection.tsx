@@ -42,7 +42,7 @@ export default function CommunitySection() {
           to="/signup"
           className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-7 py-3.5 rounded-lg font-semibold hover:bg-primary/90 transition-colors"
         >
-          Join Buildhub Free →
+          Join JustBuild Free →
         </Link>
       </div>
     </section>
