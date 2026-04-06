@@ -31,7 +31,7 @@ export default function HeroSection() {
         </Suspense>
       </div>
 
-      <div className="container relative z-10 pt-24 pb-20 max-w-4xl mx-auto text-center py-[55px]">
+      <div className="container relative z-10 pt-16 sm:pt-24 pb-20 max-w-4xl mx-auto text-center py-[55px]">
         {/* Beta badge */}
         <div className="inline-flex items-center gap-2 border-primary/40 rounded-full px-4 py-1.5 mb-8 animate-fade-in opacity-0 animate-glow-pulse border">
           <span className="w-1.5 h-1.5 rounded-full bg-primary" />
