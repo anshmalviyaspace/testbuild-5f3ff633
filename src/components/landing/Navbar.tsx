@@ -8,6 +8,7 @@ const navLinks = [
   { label: "Projects", href: "#projects" },
   { label: "Community", href: "#community" },
   { label: "Pricing", href: "#pricing" },
+  { label: "About", href: "/about", isRoute: true },
 ];
 
 export default function Navbar() {
