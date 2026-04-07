@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const footerLinks = {
   Product: [
     { label: "Tracks", href: "#tracks" },
