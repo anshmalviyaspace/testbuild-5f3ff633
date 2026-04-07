@@ -8,6 +8,7 @@ const navLinks = [
   { label: "Projects", href: "#projects" },
   { label: "Community", href: "#community" },
   { label: "Pricing", href: "#pricing" },
+  { label: "About", href: "/about", isRoute: true },
 ];
 
 export default function Navbar() {
@@ -40,15 +41,17 @@ export default function Navbar() {
 
         {/* Desktop nav links */}
         <nav className="hidden md:flex items-center gap-8">
-          {navLinks.map(({ label, href }) => (
-            <a
-              key={label}
-              href={href}
-              className="text-sm transition-colors text-white"
-            >
-              {label}
-            </a>
-          ))}
+          {navLinks.map(({ label, href, isRoute }) =>
+            isRoute ? (
+              <Link key={label} to={href} className="text-sm transition-colors text-white">
+                {label}
+              </Link>
+            ) : (
+              <a key={label} href={href} className="text-sm transition-colors text-white">
+                {label}
+              </a>
+            )
+          )}
         </nav>
 
         {/* Desktop CTA */}
@@ -73,16 +76,17 @@ export default function Navbar() {
       {mobileOpen && (
         <div className="md:hidden bg-background/95 backdrop-blur-xl border-b border-border animate-in fade-in slide-in-from-top-2 duration-200">
           <nav className="container flex flex-col gap-1 py-4">
-            {navLinks.map(({ label, href }) => (
-              <a
-                key={label}
-                href={href}
-                onClick={() => setMobileOpen(false)}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors py-2.5 px-3 rounded-lg hover:bg-muted"
-              >
-                {label}
-              </a>
-            ))}
+            {navLinks.map(({ label, href, isRoute }) =>
+              isRoute ? (
+                <Link key={label} to={href} onClick={() => setMobileOpen(false)} className="text-sm text-muted-foreground hover:text-foreground transition-colors py-2.5 px-3 rounded-lg hover:bg-muted">
+                  {label}
+                </Link>
+              ) : (
+                <a key={label} href={href} onClick={() => setMobileOpen(false)} className="text-sm text-muted-foreground hover:text-foreground transition-colors py-2.5 px-3 rounded-lg hover:bg-muted">
+                  {label}
+                </a>
+              )
+            )}
             <Link
               to="/signup"
               onClick={() => setMobileOpen(false)}

@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const footerLinks = {
   Product: [
     { label: "Tracks", href: "#tracks" },
@@ -6,7 +8,7 @@ const footerLinks = {
     { label: "Pricing", href: "#pricing" },
   ],
   Company: [
-    { label: "About", href: "#" },
+    { label: "About", href: "/about", isRoute: true },
     { label: "Blog", href: "#" },
     { label: "Careers", href: "#" },
   ],
@@ -40,12 +42,15 @@ export default function Footer() {
               <ul className="space-y-2.5">
                 {links.map((link) => (
                   <li key={link.label}>
-                    <a
-                      href={link.href}
-                      className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      {link.label}
-                    </a>
+                    {link.isRoute ? (
+                      <Link to={link.href} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                        {link.label}
+                      </Link>
+                    ) : (
+                      <a href={link.href} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                        {link.label}
+                      </a>
+                    )}
                   </li>
                 ))}
               </ul>
