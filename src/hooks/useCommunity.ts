@@ -229,7 +229,75 @@ export function useLeaderboard() {
   });
 }
 
-// ── Submit project ──
+// ── My Projects (current user's own projects) ──
+
+export function useMyProjects() {
+  const { currentUser } = useAuth();
+
+  return useQuery({
+    queryKey: ["my-projects", currentUser?.id],
+    enabled: !!currentUser,
+    staleTime: 30_000,
+    queryFn: async () => {
+      if (!currentUser) return [];
+
+      const { data: projects, error } = await supabase
+        .from("community_projects")
+        .select("*")
+        .eq("user_id", currentUser.id)
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      if (!projects?.length) return [];
+
+      // Get like counts
+      const projectIds = projects.map((p) => p.id);
+      const { data: likes } = await supabase
+        .from("project_likes")
+        .select("project_id")
+        .in("project_id", projectIds);
+
+      const likeCounts = new Map<string, number>();
+      (likes || []).forEach((l) => {
+        likeCounts.set(l.project_id, (likeCounts.get(l.project_id) || 0) + 1);
+      });
+
+      return projects.map((p) => ({
+        ...p,
+        author_name: currentUser.fullName,
+        author_username: currentUser.username,
+        author_college: currentUser.college,
+        author_initials: currentUser.avatarInitials,
+        like_count: likeCounts.get(p.id) || 0,
+        user_liked: false,
+      })) as CommunityProjectRow[];
+    },
+  });
+}
+
+// ── Delete project ──
+
+export function useDeleteProject() {
+  const qc = useQueryClient();
+  const { currentUser } = useAuth();
+
+  return useMutation({
+    mutationFn: async (projectId: string) => {
+      if (!currentUser) throw new Error("Not authenticated");
+      const { error } = await supabase
+        .from("community_projects")
+        .delete()
+        .eq("id", projectId)
+        .eq("user_id", currentUser.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["my-projects"] });
+      qc.invalidateQueries({ queryKey: ["community-projects"] });
+    },
+  });
+}
+
 
 export function useSubmitProject() {
   const qc = useQueryClient();
