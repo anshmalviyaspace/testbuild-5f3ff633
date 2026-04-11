@@ -139,8 +139,14 @@
   button:hover:not(:disabled), a[class*="bg-primary"]:hover {
     transform: translateY(-1px);
   }
-  /* Globally hide the Lovable badge */
-#lovable-badge {
-  display: none !important;
 }
+
+@layer base {
+  #lovable-badge {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
 }
+
