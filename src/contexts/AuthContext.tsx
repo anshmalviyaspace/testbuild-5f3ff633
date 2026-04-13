@@ -139,7 +139,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         currentUser,
         session,
         signupData,
-        isAuthenticated: !!session,
+        isAuthenticated: !!currentUser,
         isLoading,
         setSignupData,
         logout,

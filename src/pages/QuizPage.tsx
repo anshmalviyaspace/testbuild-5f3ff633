@@ -325,7 +325,7 @@ export default function QuizPage() {
       <header className="relative z-10 flex items-center justify-between px-6 py-4 border-b border-border">
         <div className="flex items-center gap-2">
           <span className="font-heading text-lg font-extrabold tracking-tight">
-            <span className="text-primary">Build</span>hub
+            Just<span className="text-primary">Build</span>
           </span>
           <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse-dot" />
         </div>

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Rocket, Flame, Zap, TrendingUp, Sparkles } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCommunityProjects, useMyProjects } from "@/hooks/useCommunity";
 
 function getGreeting() {
   const h = new Date().getHours();
@@ -28,7 +29,7 @@ function HomeSkeletonLoader() {
         <Skeleton className="h-4 w-48" />
       </div>
       <div className="grid sm:grid-cols-3 gap-4">
-        {[1, 2, 3].map(i => <Skeleton key={i} className="h-32" />)}
+        {[1, 2, 3].map((i) => <Skeleton key={i} className="h-32" />)}
       </div>
       <Skeleton className="h-40" />
     </div>
@@ -37,32 +38,46 @@ function HomeSkeletonLoader() {
 
 export default function HomeView() {
   const { currentUser, isLoading: authLoading } = useAuth();
-  const [loading, setLoading] = useState(true);
-  const [quizResult, setQuizResult] = useState<{ personality_type: string; score: number; level: string } | null>(null);
+  const [quizResult, setQuizResult] = useState<{
+    personality_type: string; score: number; level: string;
+  } | null>(null);
+
+  const { data: myProjects = [] } = useMyProjects();
+  const { data: recentProjects = [], isLoading: feedLoading } = useCommunityProjects();
 
   useEffect(() => {
     const stored = localStorage.getItem("justbuild_quiz_results");
     if (stored) {
       const parsed = JSON.parse(stored);
-      setQuizResult({
-        personality_type: parsed.personality_type,
-        score: parsed.score,
-        level: parsed.level,
-      });
+      setQuizResult({ personality_type: parsed.personality_type, score: parsed.score, level: parsed.level });
     }
-    const t = setTimeout(() => setLoading(false), 500);
-    return () => clearTimeout(t);
   }, []);
 
-  if (authLoading || loading) return <HomeSkeletonLoader />;
+  if (authLoading) return <HomeSkeletonLoader />;
   if (!currentUser) return <HomeSkeletonLoader />;
 
   const firstName = currentUser.fullName.split(" ")[0];
+  const recentFeed = recentProjects.slice(0, 3);
 
   const stats = [
-    { label: "PROJECTS SHIPPED", value: "0", change: "Start building!", accent: "text-primary", accentBg: "bg-primary/10", icon: Rocket },
-    { label: "XP POINTS", value: String(currentUser.xpPoints), change: "Earn by completing modules", accent: "text-warning", accentBg: "bg-warning/10", icon: Zap },
-    { label: "CURRENT STREAK", value: `${currentUser.streakDays} days`, change: "Begin your streak today", accent: "text-streak", accentBg: "bg-streak/10", icon: Flame },
+    {
+      label: "PROJECTS SHIPPED",
+      value: String(myProjects.length),
+      change: myProjects.length === 0 ? "Start building!" : `${myProjects.length} live on community`,
+      accent: "text-primary", accentBg: "bg-primary/10", icon: Rocket,
+    },
+    {
+      label: "XP POINTS",
+      value: String(currentUser.xpPoints),
+      change: "Earn by completing modules",
+      accent: "text-warning", accentBg: "bg-warning/10", icon: Zap,
+    },
+    {
+      label: "CURRENT STREAK",
+      value: `${currentUser.streakDays} days`,
+      change: currentUser.streakDays === 0 ? "Begin your streak today" : "Keep it going!",
+      accent: "text-streak", accentBg: "bg-streak/10", icon: Flame,
+    },
   ];
 
   return (
@@ -73,16 +88,14 @@ export default function HomeView() {
           <h1 className="font-heading text-2xl sm:text-[28px] font-extrabold leading-tight">
             {getGreeting()}, {firstName} 👋
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Welcome to your builder dashboard.
-          </p>
+          <p className="text-sm text-muted-foreground mt-1">Welcome to your builder dashboard.</p>
         </div>
         <p className="text-xs font-mono text-muted-foreground shrink-0 mt-1 sm:mt-2">{formatDate()}</p>
       </div>
 
       {/* Stats */}
       <div className="grid sm:grid-cols-3 gap-4">
-        {stats.map(s => (
+        {stats.map((s) => (
           <div key={s.label} className="bg-card border border-border rounded-xl p-5 transition-all duration-200 hover:border-border/80">
             <div className="flex items-center justify-between mb-3">
               <span className="text-[10px] font-mono text-muted-foreground tracking-widest">{s.label}</span>
@@ -98,7 +111,7 @@ export default function HomeView() {
         ))}
       </div>
 
-      {/* Builder DNA Card */}
+      {/* Builder DNA */}
       {quizResult && (
         <div className="bg-card border border-border rounded-xl p-6">
           <div className="flex items-center gap-2 mb-3">
@@ -117,40 +130,65 @@ export default function HomeView() {
         </div>
       )}
 
-      {/* Start Journey Card */}
+      {/* Start Journey */}
       <div className="bg-card border border-border rounded-xl p-6">
         <p className="text-[10px] font-mono text-muted-foreground tracking-widest uppercase mb-3">START YOUR JOURNEY</p>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <span className="text-2xl">{currentUser.currentTrack?.includes("AI") ? "🤖" : currentUser.currentTrack?.includes("UI") ? "🎨" : currentUser.currentTrack?.includes("Full") ? "💻" : "🚀"}</span>
+              <span className="text-2xl">
+                {currentUser.currentTrack?.includes("AI") ? "🤖" : currentUser.currentTrack?.includes("UI") ? "🎨" : currentUser.currentTrack?.includes("Full") ? "💻" : "🚀"}
+              </span>
               <span className="text-[10px] font-mono bg-primary/10 text-primary px-2.5 py-1 rounded-full">{currentUser.currentTrack}</span>
             </div>
-            <p className="text-sm text-muted-foreground">You haven't started your first module yet. Module 1 is waiting — it takes about 45 minutes.</p>
+            <p className="text-sm text-muted-foreground">
+              {myProjects.length === 0
+                ? "You haven't shipped your first project yet. Module 1 is waiting — about 45 minutes."
+                : `You've shipped ${myProjects.length} project${myProjects.length === 1 ? "" : "s"}. Keep going — the next module is ready.`}
+            </p>
           </div>
           <Link to="/dashboard/track" className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors shrink-0">
-            Begin Module 1 <ArrowRight size={14} />
+            {myProjects.length === 0 ? "Begin Module 1" : "Continue Track"} <ArrowRight size={14} />
           </Link>
         </div>
       </div>
 
       <div className="grid lg:grid-cols-5 gap-6">
-        {/* Community Feed — Empty State */}
+        {/* Community Feed */}
         <div className="lg:col-span-3 bg-card border border-border rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
             <p className="text-[10px] font-mono text-muted-foreground tracking-widest uppercase">BUILDERS ARE SHIPPING</p>
             <Link to="/dashboard/community" className="text-xs font-mono text-primary hover:underline">View All →</Link>
           </div>
-          <div className="text-center py-8">
-            <span className="text-3xl block mb-3">🚀</span>
-            <p className="text-sm text-muted-foreground">Be the first to ship something this week.</p>
-            <Link to="/dashboard/community" className="text-xs font-mono text-primary hover:underline mt-2 inline-block">
-              Browse what others built →
-            </Link>
-          </div>
+          {feedLoading ? (
+            <div className="space-y-3">{[1,2,3].map((i) => <Skeleton key={i} className="h-14" />)}</div>
+          ) : recentFeed.length === 0 ? (
+            <div className="text-center py-8">
+              <span className="text-3xl block mb-3">🚀</span>
+              <p className="text-sm text-muted-foreground">Be the first to ship something this week.</p>
+              <Link to="/dashboard/projects" className="text-xs font-mono text-primary hover:underline mt-2 inline-block">
+                Ship your first project →
+              </Link>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {recentFeed.map((p) => (
+                <Link key={p.id} to="/dashboard/community" className="flex items-center gap-3 p-3 rounded-lg hover:bg-surface2 transition-colors group">
+                  <div className="w-10 h-10 rounded-lg shrink-0 flex items-center justify-center text-xl"
+                    style={{ background: `linear-gradient(135deg, ${p.gradient_from}, ${p.gradient_to})` }}>
+                    {p.emoji}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate group-hover:text-primary transition-colors">{p.title}</p>
+                    <p className="text-[11px] font-mono text-muted-foreground">@{p.author_username} · {p.like_count} ♥</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Suggested Next */}
+        {/* Up Next */}
         <div className="lg:col-span-2 bg-card border border-border rounded-xl p-6 flex flex-col">
           <p className="text-[10px] font-mono text-muted-foreground tracking-widest uppercase mb-4">UP NEXT</p>
           <div className="flex-1 space-y-3">

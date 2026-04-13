@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -71,29 +71,58 @@ function ScoreRing({ score, size = 120 }: { score: number; size?: number }) {
 
 export default function QuizResultsPage() {
   const navigate = useNavigate();
-  const { currentUser, isLoading } = useAuth();
+  const { currentUser, isLoading, refreshProfile } = useAuth();
   const [result, setResult] = useState<QuizResult | null>(null);
+  const [retrying, setRetrying] = useState(false);
+  const attempts = useRef(0);
 
   useEffect(() => {
     const stored = localStorage.getItem("justbuild_quiz_results");
-    if (!stored) {
-      navigate("/quiz", { replace: true });
-      return;
-    }
+    if (!stored) { navigate("/quiz", { replace: true }); return; }
     setResult(JSON.parse(stored));
   }, [navigate]);
 
+  // If auth finished loading but currentUser is still null (race condition after
+  // signup where profile insert happens after onAuthStateChange fires), retry
+  // refreshProfile up to 3 times with increasing delays before giving up.
+  useEffect(() => {
+    if (isLoading || currentUser || attempts.current >= 3) return;
+    attempts.current += 1;
+    setRetrying(true);
+    const t = setTimeout(async () => {
+      await refreshProfile();
+      setRetrying(false);
+    }, 700 * attempts.current);
+    return () => clearTimeout(t);
+  }, [isLoading, currentUser, refreshProfile]);
+
   if (!result) return null;
 
-  // Show loader while profile is loading
-  if (isLoading || !currentUser) {
+  if (isLoading || retrying) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <span className="font-heading text-xl font-extrabold tracking-tight">
-            Just<span className="text-foreground">Build</span>
+            Just<span className="text-primary">Build</span>
           </span>
           <div className="w-5 h-5 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+          <p className="text-xs font-mono text-muted-foreground">Loading your results…</p>
+        </div>
+      </div>
+    );
+  }
+
+  // After 3 retries still no user — session expired, send to login
+  if (!currentUser) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-6">
+        <div className="text-center space-y-4 max-w-sm">
+          <span className="text-4xl block">📭</span>
+          <h2 className="font-heading text-xl font-bold">Session expired</h2>
+          <p className="text-sm text-muted-foreground">Your quiz results are saved. Log in to see your full profile.</p>
+          <button onClick={() => navigate("/login")} className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-2.5 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors">
+            Log In <ArrowRight size={14} />
+          </button>
         </div>
       </div>
     );

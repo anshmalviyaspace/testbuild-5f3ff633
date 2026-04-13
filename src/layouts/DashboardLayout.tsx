@@ -30,7 +30,7 @@ export default function DashboardLayout() {
     }
   }, []);
 
-  const handleLogout = () => { logout(); navigate("/"); };
+  const handleLogout = async () => { await logout(); navigate("/"); };
 
   // Keyboard shortcut: "N" opens new project modal via navigation
   const handleNewProject = useCallback(() => {
@@ -113,7 +113,7 @@ export default function DashboardLayout() {
         {/* Mobile header */}
         <header className="md:hidden flex items-center gap-3 p-4 border-b border-border bg-surface">
           <button onClick={() => setMobileOpen(true)} className="text-muted-foreground hover:text-foreground"><Menu size={20} /></button>
-          <span className="font-heading text-sm font-bold"><span className="text-primary">Build</span>hub</span>
+          <span className="font-heading text-sm font-bold">Just<span className="text-primary">Build</span></span>
         </header>
 
         <main className="flex-1 overflow-y-auto pb-16 md:pb-0">

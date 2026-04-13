@@ -1,75 +1,56 @@
+import { useRef } from "react";
 import { Link } from "react-router-dom";
+import { useGSAP } from "@gsap/react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import MagicRings from "@/components/MagicRings";
 
-const avatarColors = [
-  "bg-primary/30",
-  "bg-accent/30",
-  "bg-destructive/30",
-  "bg-primary/20",
-  "bg-accent/20",
-  "bg-destructive/20",
-];
+gsap.registerPlugin(ScrollTrigger, useGSAP);
+
+const avatarColors = ["bg-primary/30", "bg-accent/30", "bg-destructive/30", "bg-primary/20", "bg-accent/20", "bg-destructive/20"];
 const initials = ["RM", "SK", "DS", "AP", "KR", "PN"];
 
 export default function CommunitySection() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    const els = contentRef.current!.querySelectorAll(".reveal-item");
+    gsap.from(els, {
+      opacity: 0, y: 36, duration: 0.7, stagger: 0.13, ease: "power3.out",
+      scrollTrigger: { trigger: contentRef.current, start: "top 80%", toggleActions: "play none none none" },
+    });
+  }, { scope: sectionRef });
+
   return (
-    <section id="community" className="border-t border-border py-[50px] relative overflow-hidden">
-      {/* MagicRings background */}
+    <section ref={sectionRef} id="community" className="border-t border-border py-[70px] relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-auto">
-        <MagicRings
-          color="#ffffff"
-          colorTwo="#292929"
-          ringCount={6}
-          speed={1}
-          attenuation={10}
-          lineThickness={1}
-          baseRadius={0.35}
-          radiusStep={0.19}
-          scaleRate={0.1}
-          opacity={0.6}
-          blur={0}
-          noiseAmount={0.1}
-          rotation={0}
-          ringGap={1.5}
-          fadeIn={0.7}
-          fadeOut={0.5}
-          followMouse
-          mouseInfluence={0.2}
-          hoverScale={1.2}
-          parallax={0.05}
-          clickBurst={false}
-        />
+        <MagicRings color="#ffffff" colorTwo="#292929" ringCount={6} speed={1} attenuation={10}
+          lineThickness={1} baseRadius={0.35} radiusStep={0.19} scaleRate={0.1} opacity={0.6}
+          blur={0} noiseAmount={0.1} rotation={0} ringGap={1.5} fadeIn={0.7} fadeOut={0.5}
+          followMouse mouseInfluence={0.2} hoverScale={1.2} parallax={0.05} clickBurst={false} />
       </div>
 
-      <div className="container max-w-2xl mx-auto text-center relative z-10">
-        {/* Overlapping avatars */}
-        <div className="flex items-center justify-center mb-8">
+      <div ref={contentRef} className="container max-w-2xl mx-auto text-center relative z-10">
+        {/* Avatars */}
+        <div className="flex items-center justify-center mb-8 reveal-item">
           <div className="flex -space-x-3">
             {initials.map((init, i) => (
-              <div
-                key={init}
-                className={`w-11 h-11 rounded-full ${avatarColors[i]} border-2 border-background flex items-center justify-center text-xs font-mono font-medium text-foreground`}
-              >
+              <div key={init} className={`w-11 h-11 rounded-full ${avatarColors[i]} border-2 border-background flex items-center justify-center text-xs font-mono font-medium text-foreground`}>
                 {init}
               </div>
             ))}
           </div>
-          <span className="ml-3 text-xs font-mono bg-surface2 text-primary px-3 py-1.5 rounded-full">
-            +2,400
-          </span>
+          <span className="ml-3 text-xs font-mono bg-surface2 text-primary px-3 py-1.5 rounded-full">+2,400</span>
         </div>
 
-        <h2 className="font-heading text-3xl sm:text-4xl font-bold mb-4 text-balance">
+        <h2 className="font-heading text-3xl sm:text-4xl font-bold mb-4 text-balance reveal-item">
           Join a community that ships, not just scrolls.
         </h2>
-        <p className="text-muted-foreground mb-8 max-w-lg mx-auto text-pretty">
-          Every week, builders share what they made, review each other's projects,
-          and level up together.
+        <p className="text-muted-foreground mb-8 max-w-lg mx-auto text-pretty reveal-item">
+          Every week, builders share what they made, review each other's projects, and level up together.
         </p>
-        <Link
-          to="/signup"
-          className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-7 py-3.5 rounded-lg font-semibold hover:bg-primary/90 transition-colors"
-        >
+        <Link to="/signup" className="reveal-item inline-flex items-center gap-2 bg-primary text-primary-foreground px-7 py-3.5 rounded-lg font-semibold hover:bg-primary/90 transition-colors">
           Join JustBuild Free →
         </Link>
       </div>

@@ -36,7 +36,7 @@ const tracks = [
 
 export default function OnboardingPage() {
   const navigate = useNavigate();
-  const { signupData } = useAuth();
+  const { signupData, refreshProfile } = useAuth();
   const { toast } = useToast();
 
   const [step, setStep] = useState(0);
@@ -138,10 +138,10 @@ export default function OnboardingPage() {
       });
     }
 
-    // 3. signUp with auto-confirm creates a session immediately.
-    //    onAuthStateChange will fire and load the profile.
-    //    Wait a moment for the auth state to settle, then navigate.
-    await new Promise((r) => setTimeout(r, 1000));
+    // 3. Profile inserted — explicitly refresh so currentUser is populated BEFORE
+    //    we navigate. Without this, onAuthStateChange fires at signUp() time
+    //    (before insert), finds no profile, and currentUser stays null.
+    await refreshProfile();
 
     setIsSubmitting(false);
     navigate("/quiz");

@@ -1,5 +1,11 @@
+import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { Check, X } from "lucide-react";
+import { useGSAP } from "@gsap/react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 const freePlan = {
   name: "Builder",
@@ -31,24 +37,36 @@ const proPlan = {
 };
 
 export default function PricingSection() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const headingRef = useRef<HTMLDivElement>(null);
+  const cardsRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    gsap.from(headingRef.current!.children, {
+      opacity: 0, y: 24, duration: 0.65, stagger: 0.1, ease: "power3.out",
+      scrollTrigger: { trigger: headingRef.current, start: "top 85%", toggleActions: "play none none none" },
+    });
+
+    const cards = cardsRef.current!.querySelectorAll(".pricing-card");
+    gsap.from(cards, {
+      opacity: 0, y: 50, duration: 0.7, stagger: 0.18, ease: "power3.out",
+      scrollTrigger: { trigger: cardsRef.current, start: "top 80%", toggleActions: "play none none none" },
+    });
+  }, { scope: sectionRef });
+
   return (
-    <section id="pricing" className="border-t border-border py-[50px]">
+    <section ref={sectionRef} id="pricing" className="border-t border-border py-[70px]">
       <div className="container max-w-4xl mx-auto">
-        <div className="text-center mb-12">
-          <p className="text-xs font-mono text-primary tracking-widest uppercase mb-3">
-            PRICING
-          </p>
-          <h2 className="font-heading text-3xl sm:text-4xl font-bold">
-            Simple, student-friendly pricing
-          </h2>
+        <div ref={headingRef} className="text-center mb-12">
+          <p className="text-xs font-mono text-primary tracking-widest uppercase mb-3">PRICING</p>
+          <h2 className="font-heading text-3xl sm:text-4xl font-bold">Simple, student-friendly pricing</h2>
+          <p className="text-sm text-muted-foreground mt-3 max-w-md mx-auto">Start for free. Upgrade when you're ready to go deeper.</p>
         </div>
 
-        <div className="grid sm:grid-cols-2 gap-6">
+        <div ref={cardsRef} className="grid sm:grid-cols-2 gap-6">
           {/* Free */}
-          <div className="bg-card border border-border rounded-xl p-7">
-            <p className="text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1">
-              FREE
-            </p>
+          <div className="pricing-card bg-card border border-border rounded-xl p-7">
+            <p className="text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1">FREE</p>
             <h3 className="font-heading text-xl font-bold mb-4">{freePlan.name}</h3>
             <div className="mb-6">
               <span className="text-4xl font-heading font-bold">{freePlan.price}</span>
@@ -57,33 +75,22 @@ export default function PricingSection() {
             <div className="space-y-3 mb-8">
               {freePlan.features.map((f) => (
                 <div key={f.text} className="flex items-center gap-3 text-sm">
-                  {f.included ? (
-                    <Check size={14} className="text-primary shrink-0" />
-                  ) : (
-                    <X size={14} className="text-muted-foreground/40 shrink-0" />
-                  )}
-                  <span className={f.included ? "text-foreground" : "text-muted-foreground/50"}>
-                    {f.text}
-                  </span>
+                  {f.included ? <Check size={14} className="text-primary shrink-0" /> : <X size={14} className="text-muted-foreground/40 shrink-0" />}
+                  <span className={f.included ? "text-foreground" : "text-muted-foreground/50"}>{f.text}</span>
                 </div>
               ))}
             </div>
-            <Link
-              to="/signup"
-              className="block w-full text-center border border-border py-3 rounded-lg text-sm font-medium text-foreground hover:bg-surface2 transition-colors"
-            >
+            <Link to="/signup" className="block w-full text-center border border-border py-3 rounded-lg text-sm font-medium text-foreground hover:bg-surface2 transition-colors">
               Get Started Free
             </Link>
           </div>
 
           {/* Pro */}
-          <div className="relative bg-card border border-primary/40 rounded-xl p-7 card-hover-glow">
+          <div className="pricing-card relative bg-card border border-primary/40 rounded-xl p-7">
             <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-[10px] font-mono font-medium px-3 py-1 rounded-full uppercase tracking-wider">
               Most Popular
             </span>
-            <p className="text-xs font-mono text-primary uppercase tracking-wider mb-1">
-              PRO
-            </p>
+            <p className="text-xs font-mono text-primary uppercase tracking-wider mb-1">PRO</p>
             <h3 className="font-heading text-xl font-bold mb-4">{proPlan.name}</h3>
             <div className="mb-6">
               <span className="text-4xl font-heading font-bold">{proPlan.price}</span>
@@ -97,10 +104,7 @@ export default function PricingSection() {
                 </div>
               ))}
             </div>
-            <Link
-              to="/signup"
-              className="block w-full text-center bg-primary text-primary-foreground py-3 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors"
-            >
+            <Link to="/signup" className="block w-full text-center bg-primary text-primary-foreground py-3 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors">
               Start Pro — ₹299/mo
             </Link>
           </div>
