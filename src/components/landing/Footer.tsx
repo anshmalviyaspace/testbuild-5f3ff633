@@ -26,7 +26,7 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <h3 className="font-heading text-lg font-bold mb-2">
-              <span className="text-primary">Just</span>Build
+              Just<span className="text-primary">Build</span>
             </h3>
             <p className="text-sm text-muted-foreground">
               Build more. Consume less.
