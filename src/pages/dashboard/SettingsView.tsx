@@ -6,7 +6,7 @@ import { AlertTriangle, ArrowRight, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 const trackOptions = [
-  { value: "AI & ML", emoji: "🤖" },
+  { value: "AI & Machine Learning", emoji: "🤖" },
   { value: "UI/UX Design", emoji: "🎨" },
   { value: "Full Stack Dev", emoji: "💻" },
   { value: "Build a Startup", emoji: "🚀" },
@@ -43,7 +43,7 @@ export default function SettingsView() {
       setUsername(currentUser.username || "");
       setCollege(currentUser.college || "");
       setBio(currentUser.bio || "");
-      setSelectedTrack(currentUser.currentTrack || "AI & ML");
+      setSelectedTrack(currentUser.currentTrack || "AI & Machine Learning");
       setEmail(currentUser.email || "");
     }
   }, [currentUser]);

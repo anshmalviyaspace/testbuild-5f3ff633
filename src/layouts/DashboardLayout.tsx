@@ -89,7 +89,7 @@ export default function DashboardLayout() {
   );
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-[100dvh] overflow-hidden">
       {/* Desktop sidebar */}
       <aside className="hidden md:flex w-60 shrink-0 border-r border-border bg-surface flex-col">
         {sidebarContent}
@@ -116,12 +116,12 @@ export default function DashboardLayout() {
           <span className="font-heading text-sm font-bold">Just<span className="text-primary">Build</span></span>
         </header>
 
-        <main className="flex-1 overflow-y-auto pb-16 md:pb-0">
+        <main className="flex-1 overflow-y-auto pb-20 md:pb-0">
           <Outlet />
         </main>
 
         {/* Mobile bottom tab bar */}
-        <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-surface border-t border-border flex items-center justify-around py-2 z-40">
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-surface border-t border-border flex items-center justify-around pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] z-40">
           {bottomTabItems.map(({ to, icon: Icon }) => (
             <NavLink key={to} to={to}
               className={({ isActive }) => clsx(

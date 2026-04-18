@@ -5,6 +5,11 @@
   text-align: center;
 }
 
+#root {
+  /* No constraints — let each page control its own layout */
+  min-height: 100vh;
+}
+
 .logo {
   height: 6em;
   padding: 1.5em;

@@ -75,7 +75,7 @@ export default function SignupPage() {
         <div className="relative z-10">
           <Link to="/" className="flex items-center gap-2">
             <span className="font-heading text-xl font-extrabold tracking-tight">
-              Just<span className="text-foreground">Build</span>
+              Just<span className="text-primary">Build</span>
             </span>
             <span className="w-2 h-2 rounded-full bg-primary animate-pulse-dot" />
           </Link>
@@ -114,7 +114,7 @@ export default function SignupPage() {
           <div className="lg:hidden mb-8">
             <Link to="/" className="flex items-center gap-2">
               <span className="font-heading text-xl font-extrabold tracking-tight">
-                Just<span className="text-foreground">Build</span>
+                Just<span className="text-primary">Build</span>
               </span>
               <span className="w-2 h-2 rounded-full bg-primary animate-pulse-dot" />
             </Link>

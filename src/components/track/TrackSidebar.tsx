@@ -13,10 +13,12 @@ interface Props {
   modules: Module[];
   activeModuleId: number;
   completedCount: number;
+  mobile?: boolean; // when true, removes border-r (used inside mobile tab panel)
   totalXp: number;
   totalPossibleXp: number;
   progressPercent: number;
   track: string;
+  mobile?: boolean;
   onModuleClick: (mod: Module) => void;
 }
 
@@ -28,12 +30,13 @@ export default function TrackSidebar({
   totalPossibleXp,
   progressPercent,
   track,
+  mobile = false,
   onModuleClick,
 }: Props) {
   const meta = TRACK_META[track] ?? { emoji: "🚀", difficulty: "Self-paced" };
 
   return (
-    <div className="w-full lg:w-[400px] shrink-0 border-r border-border bg-surface overflow-y-auto p-6 space-y-6">
+    <div className={clsx("w-full shrink-0 bg-surface overflow-y-auto p-6 space-y-6", !mobile && "border-r border-border lg:w-[400px]")}>
       {/* Track header */}
       <div>
         <h1 className="font-heading text-xl font-extrabold flex items-center gap-2">

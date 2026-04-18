@@ -86,7 +86,7 @@ export default function PortfolioView() {
             <p className="text-sm font-mono text-primary">@{currentUser.username}</p>
             <p className="text-xs text-muted-foreground mt-1">{currentUser.college}</p>
             {currentUser.bio && <p className="text-sm text-muted-foreground/80 mt-2">{currentUser.bio}</p>}
-            <div className="grid grid-cols-3 gap-4 mt-4 pt-4 border-t border-border">
+            <div className="grid grid-cols-3 gap-3 mt-4 pt-4 border-t border-border">
               <div>
                 <p className="font-heading text-xl font-bold">{projects.length}</p>
                 <p className="text-[10px] font-mono text-muted-foreground tracking-wide uppercase">Projects</p>
@@ -113,7 +113,7 @@ export default function PortfolioView() {
               ✦ {quizResult.personality_type.toUpperCase()}
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-3">
             <div className="text-center">
               <p className="text-[10px] font-mono text-muted-foreground tracking-widest uppercase">BASE LEVEL</p>
               <p className="font-heading text-xl font-extrabold mt-1">{quizResult.level}</p>

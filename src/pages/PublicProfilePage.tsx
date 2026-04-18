@@ -233,7 +233,7 @@ export default function PublicProfilePage() {
                   ✦ {profile.personalityType.toUpperCase()}
                 </div>
               </div>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-3 gap-2 sm:gap-4">
                 <div className="text-center">
                   <p className="text-[10px] font-mono text-muted-foreground tracking-widest uppercase">BASE LEVEL</p>
                   <p className="font-heading text-xl font-extrabold mt-1">{profile.quizLevel}</p>
