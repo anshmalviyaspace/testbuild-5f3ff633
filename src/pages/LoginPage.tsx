@@ -56,10 +56,10 @@ export default function LoginPage() {
       return;
     }
 
-    // Auth state change listener will update the session & profile.
-    // The useEffect above will navigate once isAuthenticated becomes true.
-    toast({ title: "Welcome back! 👋" });
+    // Navigate immediately — don't wait for the useEffect race condition
     setIsSubmitting(false);
+    toast({ title: "Welcome back! 👋" });
+    navigate("/dashboard/home", { replace: true });
   };
 
   const inputBase =

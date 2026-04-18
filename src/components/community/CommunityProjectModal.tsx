@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { X, Heart, ExternalLink, ArrowRight, Send, Loader2 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatDistanceToNow } from "date-fns";
 import type { CommunityProjectRow } from "@/hooks/useCommunity";
@@ -14,6 +14,7 @@ interface Props {
 
 export default function CommunityProjectModal({ project: p, onLike, onClose }: Props) {
   const { currentUser } = useAuth();
+  const navigate = useNavigate();
   const [commentText, setCommentText] = useState("");
   const { data: comments = [], isLoading: loadingComments } = useProjectComments(p.id);
   const addComment = useAddComment();
@@ -57,9 +58,12 @@ export default function CommunityProjectModal({ project: p, onLike, onClose }: P
               <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-[9px] font-mono font-semibold text-primary-foreground">
                 {initials}
               </div>
-              <span className="text-sm text-muted-foreground font-mono">
+              <button
+                onClick={() => p.author_username && navigate(`/profile/${p.author_username}`)}
+                className="text-sm text-muted-foreground font-mono hover:text-primary transition-colors text-left"
+              >
                 {p.author_name} · {p.author_college}
-              </span>
+              </button>
             </div>
           </div>
 

@@ -13,6 +13,7 @@ export interface User {
   avatarInitials: string;
   bio?: string;
   email?: string;
+  planType: "free" | "pro";
 }
 
 export interface SignupData {
@@ -28,6 +29,7 @@ interface AuthContextType {
   signupData: SignupData | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isPro: boolean;
   setSignupData: (data: SignupData) => void;
   logout: () => Promise<void>;
   refreshProfile: () => Promise<void>;
@@ -37,16 +39,11 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 function rowToUser(row: any, email?: string): User {
   return {
-    id: row.id,
-    fullName: row.full_name ?? "",
-    username: row.username ?? "",
-    college: row.college ?? "",
-    currentTrack: row.current_track ?? "AI & Machine Learning",
-    xpPoints: row.xp_points ?? 0,
-    streakDays: row.streak_days ?? 0,
-    avatarInitials: row.avatar_initials ?? "BU",
-    bio: row.bio ?? undefined,
-    email: row.email ?? email,
+    id: row.id, fullName: row.full_name ?? "", username: row.username ?? "",
+    college: row.college ?? "", currentTrack: row.current_track ?? "AI & Machine Learning",
+    xpPoints: row.xp_points ?? 0, streakDays: row.streak_days ?? 0,
+    avatarInitials: row.avatar_initials ?? "BU", bio: row.bio ?? undefined,
+    email: row.email ?? email, planType: row.plan_type === "pro" ? "pro" : "free",
   };
 }
 
@@ -56,103 +53,52 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [signupData, setSignupDataState] = useState<SignupData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const loadProfile = useCallback(async (supabaseUser: SupabaseUser) => {
+  const loadProfile = useCallback(async (u: SupabaseUser) => {
     try {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", supabaseUser.id)
-        .single();
-
-      if (error || !data) {
-        console.warn("Profile not found for user:", supabaseUser.id, error?.message);
-        setCurrentUser(null);
-        return;
-      }
-
-      setCurrentUser(rowToUser(data, supabaseUser.email));
-    } catch (err) {
-      console.error("Error loading profile:", err);
-      setCurrentUser(null);
-    }
+      const { data, error } = await supabase.from("profiles").select("*").eq("id", u.id).single();
+      if (error || !data) { setCurrentUser(null); return; }
+      setCurrentUser(rowToUser(data, u.email));
+    } catch { setCurrentUser(null); }
   }, []);
 
   const refreshProfile = useCallback(async () => {
-    const { data: { session: currentSession } } = await supabase.auth.getSession();
-    if (currentSession?.user) {
-      await loadProfile(currentSession.user);
-    }
+    const { data: { session: s } } = await supabase.auth.getSession();
+    if (s?.user) await loadProfile(s.user);
   }, [loadProfile]);
 
   useEffect(() => {
     let mounted = true;
-
-    // 1. Set up the auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, newSession) => {
-        if (!mounted) return;
-
-        setSession(newSession);
-
-        if (newSession?.user) {
-          // Use setTimeout to avoid Supabase deadlock on simultaneous calls
-          setTimeout(async () => {
-            if (!mounted) return;
-            await loadProfile(newSession.user);
-            if (mounted) setIsLoading(false);
-          }, 0);
-        } else {
-          setCurrentUser(null);
-          setIsLoading(false);
-        }
-      }
-    );
-
-    // 2. Get the initial session
-    supabase.auth.getSession().then(async ({ data: { session: existingSession } }) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_e, ns) => {
       if (!mounted) return;
-
-      setSession(existingSession);
-      if (existingSession?.user) {
-        await loadProfile(existingSession.user);
-      }
+      setSession(ns);
+      if (ns?.user) {
+        setTimeout(async () => { if (!mounted) return; await loadProfile(ns.user); if (mounted) setIsLoading(false); }, 0);
+      } else { setCurrentUser(null); if (mounted) setIsLoading(false); }
+    });
+    supabase.auth.getSession().then(async ({ data: { session: es } }) => {
+      if (!mounted) return;
+      setSession(es);
+      if (es?.user) await loadProfile(es.user);
       if (mounted) setIsLoading(false);
     });
-
-    return () => {
-      mounted = false;
-      subscription.unsubscribe();
-    };
+    return () => { mounted = false; subscription.unsubscribe(); };
   }, [loadProfile]);
 
-  const setSignupData = (data: SignupData) => setSignupDataState(data);
-
-  const logout = async () => {
-    await supabase.auth.signOut();
-    setCurrentUser(null);
-    setSession(null);
-  };
-
   return (
-    <AuthContext.Provider
-      value={{
-        currentUser,
-        session,
-        signupData,
-        isAuthenticated: !!currentUser,
-        isLoading,
-        setSignupData,
-        logout,
-        refreshProfile,
-      }}
-    >
+    <AuthContext.Provider value={{
+      currentUser, session, signupData, isAuthenticated: !!currentUser,
+      isLoading, isPro: currentUser?.planType === "pro",
+      setSignupData: (d) => setSignupDataState(d),
+      logout: async () => { await supabase.auth.signOut(); setCurrentUser(null); setSession(null); },
+      refreshProfile,
+    }}>
       {children}
     </AuthContext.Provider>
   );
 }
 
 export function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) throw new Error("useAuth must be used within AuthProvider");
-  return context;
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
+  return ctx;
 }
