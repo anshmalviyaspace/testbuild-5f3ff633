@@ -11,10 +11,9 @@ gsap.registerPlugin(useGSAP);
 const Dither = lazy(() => import("@/components/Dither"));
 
 const stats = [
-  { value: "2,400+", label: "BUILDERS" },
-  { value: "180+",   label: "PROJECTS SHIPPED" },
-  { value: "12",     label: "COLLEGES" },
-  { value: "4",      label: "TRACKS" },
+  { value: "5+", label: "BUILDERS" },
+  { value: "3+",   label: "PROJECTS SHIPPED" },
+  { value: "1",     label: "COLLEGES" },
 ];
 
 export default function HeroSection() {
