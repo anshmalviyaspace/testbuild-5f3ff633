@@ -24,7 +24,7 @@ const freePlan = {
 
 const proPlan = {
   name: "Pro Builder",
-  price: "₹299",
+  price: "₹399",
   period: "/month",
   features: [
     { text: "All 4 tracks", included: true },
