@@ -12,9 +12,9 @@ const Dither = lazy(() => import("@/components/Dither"));
 
 const stats = [
   { value: "5+", label: "BUILDERS" },
-  { value: "3+",   label: "PROJECTS SHIPPED" },
-  { value: "1",     label: "COLLEGES" },
-  { value: "4",     label: "TRACKS" },
+  { value: "3+", label: "PROJECTS SHIPPED" },
+  { value: "1",  label: "COLLEGES" },
+  { value: "4",  label: "TRACKS" },
 ];
 
 export default function HeroSection() {
