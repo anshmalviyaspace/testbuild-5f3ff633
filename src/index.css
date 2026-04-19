@@ -3,6 +3,8 @@
 @tailwind utilities;
 
 @layer base {
+  html, body { overflow-x: hidden; }
+
   :root {
     --background: 216 30% 5%;
     --foreground: 210 33% 96%;
@@ -59,12 +61,10 @@
 }
 
 @layer base {
+  html, body { overflow-x: hidden; }
+
   * {
     @apply border-border;
-  }
-
-  html, body {
-    overflow-x: hidden;
   }
 
   html {
@@ -146,6 +146,8 @@
 }
 
 @layer base {
+  html, body { overflow-x: hidden; }
+
   #lovable-badge {
     display: none !important;
     visibility: hidden !important;
