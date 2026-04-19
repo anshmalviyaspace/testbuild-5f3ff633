@@ -103,13 +103,13 @@ export default function HeroSection() {
         <div className="mt-10 flex items-center justify-center gap-4 animate-fade-in-up opacity-0 stagger-4 flex-wrap">
           <Link
             to="/signup"
-            className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-7 py-3.5 rounded-lg font-semibold hover:bg-primary/90 transition-colors"
+            className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-7 py-3.5 rounded-lg font-semibold hover:bg-primary/90 transition-colors h-[46px]"
           >
             Start Building <ArrowRight size={16} />
           </Link>
           <a
             href="#projects"
-            className="inline-flex items-center gap-2 border border-white/30 text-white/90 px-7 py-3.5 rounded-lg text-sm transition-colors hover:border-white/60 hover:bg-white/5"
+            className="inline-flex items-center justify-center gap-2 border border-white/30 text-white/90 px-7 py-3.5 rounded-lg font-medium transition-colors hover:border-white/60 hover:bg-white/5 h-[46px]"
           >
             See Projects
           </a>

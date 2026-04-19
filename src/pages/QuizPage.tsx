@@ -261,9 +261,21 @@ export default function QuizPage() {
       answers,
       technicalScore,
     };
-    localStorage.setItem("justbuild_quiz_results", JSON.stringify(resultData));
+    
+    try {
+      localStorage.setItem("justbuild_quiz_results", JSON.stringify(resultData));
+    } catch (err) {
+      console.error("Failed to save quiz results to localStorage:", err);
+      setSaving(false);
+      toast({ 
+        title: "Error", 
+        description: "Failed to save your results. Please refresh and try again.", 
+        variant: "destructive" 
+      });
+      return;
+    }
 
-    // Save to database
+    // Save to database (non-blocking — won't prevent navigation)
     try {
       const { error: upsertError } = await supabase.from("quiz_results").upsert({
         user_id: userId,
@@ -285,7 +297,8 @@ export default function QuizPage() {
       }).eq("id", userId);
       if (profileError) console.error("Profile update error:", profileError);
     } catch (err) {
-      console.error("Error saving quiz results:", err);
+      console.error("Error saving quiz results to database:", err);
+      // Don't block navigation - results are already in localStorage
     }
 
     await refreshProfile();

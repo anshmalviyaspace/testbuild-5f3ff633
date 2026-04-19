@@ -86,7 +86,7 @@ export default function Navbar() {
           {isAuthenticated ? (
             <Link
               to="/dashboard/home"
-              className="nav-item bg-primary text-primary-foreground px-5 py-2 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors"
+              className="nav-item bg-primary text-primary-foreground px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors h-10 flex items-center justify-center"
             >
               Dashboard →
             </Link>
@@ -94,13 +94,13 @@ export default function Navbar() {
             <>
               <Link
                 to="/login"
-                className="nav-item text-sm text-white/80 hover:text-white transition-colors font-medium"
+                className="nav-item text-sm text-white/80 hover:text-white transition-colors font-medium h-10 flex items-center justify-center px-5"
               >
                 Log In
               </Link>
               <Link
                 to="/signup"
-                className="nav-item bg-primary text-primary-foreground px-5 py-2 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors"
+                className="nav-item bg-primary text-primary-foreground px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors h-10 flex items-center justify-center"
               >
                 Start Building
               </Link>

@@ -128,23 +128,32 @@ export default function OnboardingPage() {
       avatar_initials: initials,
       bio: bio || null,
       email: signupData.email,
+      plan_type: "free",
     });
 
     if (profileError) {
       console.error("Profile insert error:", profileError.message);
+      setIsSubmitting(false);
+      
+      // Profile creation failed — sign out the auth user to prevent orphaned accounts
+      await supabase.auth.signOut();
+      
       toast({
-        title: "Account created!",
-        description: "We had trouble saving your profile — you can update it in Settings.",
+        title: "Setup failed",
+        description: "We couldn't save your profile. Please try signing up again.",
+        variant: "destructive",
       });
+      
+      navigate("/signup", { replace: true });
+      return;
     }
 
-    // 3. Profile inserted — explicitly refresh so currentUser is populated BEFORE
-    //    we navigate. Without this, onAuthStateChange fires at signUp() time
-    //    (before insert), finds no profile, and currentUser stays null.
+    // 3. Profile successfully inserted — refresh to populate currentUser BEFORE navigating to quiz
     await refreshProfile();
 
     setIsSubmitting(false);
-    navigate("/quiz");
+    toast({ title: "Account created! 🎉", description: "Starting your learning journey..." });
+    navigate("/quiz", { replace: true });
   };
 
   const animClass =

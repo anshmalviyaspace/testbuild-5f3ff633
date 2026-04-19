@@ -78,8 +78,25 @@ export default function QuizResultsPage() {
 
   useEffect(() => {
     const stored = localStorage.getItem("justbuild_quiz_results");
-    if (!stored) { navigate("/quiz", { replace: true }); return; }
-    setResult(JSON.parse(stored));
+    if (!stored) { 
+      navigate("/quiz", { replace: true }); 
+      return; 
+    }
+    try {
+      const parsed = JSON.parse(stored);
+      // Validate result structure to prevent corrupted data
+      if (!parsed.score || parsed.score < 0 || parsed.score > 100 || !parsed.personality_type) {
+        console.warn("Invalid quiz results structure, redirecting to quiz");
+        localStorage.removeItem("justbuild_quiz_results");
+        navigate("/quiz", { replace: true });
+        return;
+      }
+      setResult(parsed);
+    } catch (err) {
+      console.error("Failed to parse quiz results:", err);
+      localStorage.removeItem("justbuild_quiz_results");
+      navigate("/quiz", { replace: true });
+    }
   }, [navigate]);
 
   // If auth finished loading but currentUser is still null (race condition after
