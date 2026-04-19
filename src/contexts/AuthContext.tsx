@@ -15,24 +15,13 @@ export interface User {
   email?: string;
   planType: "free" | "pro";
 }
-
-export interface SignupData {
-  fullName: string;
-  college: string;
-  email: string;
-  password: string;
-}
+export interface SignupData { fullName: string; college: string; email: string; password: string; }
 
 interface AuthContextType {
-  currentUser: User | null;
-  session: Session | null;
-  signupData: SignupData | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  isPro: boolean;
-  setSignupData: (data: SignupData) => void;
-  logout: () => Promise<void>;
-  refreshProfile: () => Promise<void>;
+  currentUser: User | null; session: Session | null; signupData: SignupData | null;
+  isAuthenticated: boolean; isLoading: boolean; isPro: boolean;
+  setSignupData: (d: SignupData) => void;
+  logout: () => Promise<void>; refreshProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -56,7 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loadProfile = useCallback(async (u: SupabaseUser) => {
     try {
       const { data, error } = await supabase.from("profiles").select("*").eq("id", u.id).single();
-      if (error || !data) { setCurrentUser(null); return; }
+      if (error || !data) { console.warn("Profile not found:", u.id); setCurrentUser(null); return; }
       setCurrentUser(rowToUser(data, u.email));
     } catch { setCurrentUser(null); }
   }, []);
@@ -72,9 +61,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!mounted) return;
       setSession(ns);
       if (ns?.user) {
-        setTimeout(async () => { if (!mounted) return; await loadProfile(ns.user); if (mounted) setIsLoading(false); }, 0);
-      } else { setCurrentUser(null); if (mounted) setIsLoading(false); }
+        // setTimeout(0) prevents Supabase internal deadlock
+        setTimeout(async () => {
+          if (!mounted) return;
+          await loadProfile(ns.user);
+          if (mounted) setIsLoading(false);
+        }, 0);
+      } else {
+        setCurrentUser(null);
+        if (mounted) setIsLoading(false);
+      }
     });
+    // Get initial session (handles page refresh with existing auth)
     supabase.auth.getSession().then(async ({ data: { session: es } }) => {
       if (!mounted) return;
       setSession(es);
@@ -86,8 +84,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider value={{
-      currentUser, session, signupData, isAuthenticated: !!currentUser,
-      isLoading, isPro: currentUser?.planType === "pro",
+      currentUser, session, signupData,
+      isAuthenticated: !!currentUser, isLoading,
+      isPro: currentUser?.planType === "pro",
       setSignupData: (d) => setSignupDataState(d),
       logout: async () => { await supabase.auth.signOut(); setCurrentUser(null); setSession(null); },
       refreshProfile,

@@ -35,7 +35,7 @@ export default function TrackSidebar({
   const meta = TRACK_META[track] ?? { emoji: "🚀", difficulty: "Self-paced" };
 
   return (
-    <div className={clsx("w-full shrink-0 bg-surface overflow-y-auto p-6 space-y-6", !mobile && "lg:w-[380px] border-r border-border")}>
+    <div className={`w-full shrink-0 bg-surface overflow-y-auto p-6 space-y-6${mobile ? "" : " lg:w-[380px] border-r border-border"}`}>
       {/* Track header */}
       <div>
         <h1 className="font-heading text-xl font-extrabold flex items-center gap-2">

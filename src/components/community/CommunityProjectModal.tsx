@@ -58,10 +58,7 @@ export default function CommunityProjectModal({ project: p, onLike, onClose }: P
               <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-[9px] font-mono font-semibold text-primary-foreground">
                 {initials}
               </div>
-              <button
-                onClick={() => p.author_username && navigate(`/profile/${p.author_username}`)}
-                className="text-sm text-muted-foreground font-mono hover:text-primary transition-colors text-left"
-              >
+              <button onClick={() => p.author_username && (onClose(), navigate(`/profile/${p.author_username}`))} className="text-sm text-muted-foreground font-mono hover:text-primary transition-colors text-left">
                 {p.author_name} · {p.author_college}
               </button>
             </div>

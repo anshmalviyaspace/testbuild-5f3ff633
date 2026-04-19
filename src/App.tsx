@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";
@@ -19,11 +19,14 @@ import ProjectsView from "@/pages/dashboard/ProjectsView";
 import CommunityView from "@/pages/dashboard/CommunityView";
 import PortfolioView from "@/pages/dashboard/PortfolioView";
 import SettingsView from "@/pages/dashboard/SettingsView";
+import ToolsView from "@/pages/dashboard/ToolsView";
 import PublicProfilePage from "@/pages/PublicProfilePage";
 import NotFound from "@/pages/NotFound";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: false } },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -33,28 +36,25 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            {/* Public routes */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/onboarding" element={<OnboardingPage />} />
+            <Route path="/profile/:username" element={<PublicProfilePage />} />
 
-            {/* Protected quiz routes */}
             <Route element={<ProtectedRoute />}>
               <Route path="/quiz" element={<QuizPage />} />
               <Route path="/quiz/results" element={<QuizResultsPage />} />
             </Route>
-            <Route path="/profile/:username" element={<PublicProfilePage />} />
 
-            {/* Protected dashboard routes — redirect to /login if not authenticated */}
             <Route element={<ProtectedRoute />}>
               <Route path="/dashboard" element={<DashboardLayout />}>
-                <Route index element={<Navigate to="home" replace />} />
                 <Route path="home" element={<HomeView />} />
                 <Route path="track" element={<TrackView />} />
                 <Route path="projects" element={<ProjectsView />} />
                 <Route path="community" element={<CommunityView />} />
+                <Route path="tools" element={<ToolsView />} />
                 <Route path="portfolio" element={<PortfolioView />} />
                 <Route path="settings" element={<SettingsView />} />
               </Route>

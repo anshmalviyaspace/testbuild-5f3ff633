@@ -7,51 +7,39 @@ interface Props { data: LeaderboardRow[]; loading?: boolean; }
 
 export default function Leaderboard({ data, loading }: Props) {
   const { currentUser } = useAuth();
-  const medals = ["🥇", "🥈", "🥉"];
+  const medals = ["🥇","🥈","🥉"];
 
-  if (loading) return (
-    <div className="flex justify-center py-16"><Loader2 size={24} className="animate-spin text-muted-foreground" /></div>
-  );
+  if (loading) return <div className="flex justify-center py-16"><Loader2 size={24} className="animate-spin text-muted-foreground" /></div>;
 
   if (!data.length) return (
     <div className="text-center py-16">
       <span className="text-4xl block mb-4">🏆</span>
-      <p className="text-muted-foreground text-sm">No builders on the leaderboard yet. Start building to claim your spot!</p>
+      <p className="text-muted-foreground text-sm">No builders yet. Ship a project to get on the board!</p>
     </div>
   );
 
   return (
     <div>
-      <h2 className="font-heading text-xl font-bold mb-6">🏆 Top Builders</h2>
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="font-heading text-xl font-bold">🏆 Top Builders</h2>
+        <span className="text-xs font-mono text-muted-foreground">{data.length} builders</span>
+      </div>
       <div className="space-y-2">
         {data.map((entry, idx) => {
           const initials = (entry.avatar_initials || "??").toUpperCase();
           const isMe = currentUser?.id === entry.id;
           return (
-            <Link
-              key={entry.id}
-              to={entry.username ? `/profile/${entry.username}` : "#"}
-              className={`flex items-center gap-4 p-4 rounded-xl border transition-colors group ${
-                isMe ? "bg-primary/[0.06] border-primary/20" : "bg-card border-border hover:border-muted-foreground/30"
-              }`}
-            >
-              <span className="w-8 text-center font-heading font-bold text-lg shrink-0">
-                {medals[idx] || `#${idx + 1}`}
-              </span>
+            <Link key={entry.id} to={entry.username ? `/profile/${entry.username}` : "#"}
+              className={`flex items-center gap-4 p-4 rounded-xl border transition-colors group ${isMe ? "bg-primary/[0.06] border-primary/20" : "bg-card border-border hover:border-muted-foreground/30"}`}>
+              <span className="w-8 text-center font-heading font-bold text-lg shrink-0">{medals[idx] || `#${idx+1}`}</span>
               <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-[10px] font-mono font-semibold text-primary-foreground shrink-0">
                 {initials}
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <p className="text-sm font-medium truncate group-hover:text-primary transition-colors">
-                    {entry.full_name}
-                  </p>
-                  {isMe && (
-                    <span className="text-[9px] font-mono bg-primary/10 text-primary px-1.5 py-0.5 rounded shrink-0">← You</span>
-                  )}
-                  {entry.plan_type === "pro" && (
-                    <span className="text-[9px] font-mono bg-warning/20 text-warning px-1.5 py-0.5 rounded shrink-0">✦ Pro</span>
-                  )}
+                  <p className="text-sm font-medium truncate group-hover:text-primary transition-colors">{entry.full_name}</p>
+                  {isMe && <span className="text-[9px] font-mono bg-primary/10 text-primary px-1.5 py-0.5 rounded shrink-0">← You</span>}
+                  {entry.plan_type === "pro" && <span className="text-[9px] font-mono bg-warning/20 text-warning px-1.5 py-0.5 rounded shrink-0">★ Pro</span>}
                 </div>
                 <p className="text-xs font-mono text-muted-foreground truncate">{entry.college}</p>
               </div>
@@ -63,7 +51,7 @@ export default function Leaderboard({ data, loading }: Props) {
           );
         })}
       </div>
-      <p className="text-center text-sm text-muted-foreground mt-8">Keep building to climb the leaderboard 🚀</p>
+      <p className="text-center text-sm text-muted-foreground mt-8">Build more to climb the leaderboard 🚀</p>
       <div className="flex justify-center mt-4">
         <Link to="/dashboard/track" className="text-xs font-mono text-primary hover:underline">Continue your track →</Link>
       </div>
