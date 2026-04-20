@@ -105,7 +105,7 @@ export default function PricingSection() {
               ))}
             </div>
             <Link to="/signup" className="block w-full text-center bg-primary text-primary-foreground py-3 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors">
-              Start Pro — ₹299/mo
+              Start Pro — ₹399/m
             </Link>
           </div>
         </div>
