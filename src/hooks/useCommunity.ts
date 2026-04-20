@@ -11,6 +11,7 @@ export interface CommunityProjectRow {
   gradient_from: string; gradient_to: string; created_at: string;
   author_name?: string; author_username?: string; author_college?: string; author_initials?: string;
   like_count: number; user_liked: boolean;
+  project_url?: string;
 }
 export interface CommentRow {
   id: string; user_id: string; project_id: string; content: string; created_at: string;
@@ -221,7 +222,7 @@ export function useSubmitProject() {
   const qc = useQueryClient();
   const { currentUser } = useAuth();
   return useMutation({
-    mutationFn: async (project: { title: string; description: string; tags: string[]; track: string; emoji: string }) => {
+    mutationFn: async (project: { title: string; description: string; tags: string[]; track: string; emoji: string; project_url?: string }) => {
       if (!currentUser) throw new Error("Not authenticated");
       const gs = [
         { f: "hsl(160 100% 45% / 0.25)", t: "hsl(220 100% 50% / 0.15)" },

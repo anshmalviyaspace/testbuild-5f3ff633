@@ -13,6 +13,7 @@ export interface User {
   avatarInitials: string;
   bio?: string;
   email?: string;
+  avatarUrl?: string;
   planType: "free" | "pro";
 }
 export interface SignupData { fullName: string; college: string; email: string; password: string; }

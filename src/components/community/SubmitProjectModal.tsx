@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X, Loader2, Lock, ArrowRight } from "lucide-react";
+import { X, Loader2, Lock, ArrowRight, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useSubmitProject, useCanPost, PLAN_LIMITS } from "@/hooks/useCommunity";
 import { useAuth } from "@/contexts/AuthContext";
@@ -15,14 +15,15 @@ export default function SubmitProjectModal({ onClose }: Props) {
   const { data: canPostData, isLoading: checking } = useCanPost();
   const submit = useSubmitProject();
 
-  const [title, setTitle] = useState("");
+  const [title,       setTitle]       = useState("");
   const [description, setDescription] = useState("");
-  const [tagsInput, setTagsInput] = useState("");
-  const [track, setTrack] = useState(tracks[0]);
-  const [emoji, setEmoji] = useState("🚀");
+  const [tagsInput,   setTagsInput]   = useState("");
+  const [projectUrl,  setProjectUrl]  = useState("");
+  const [track,       setTrack]       = useState(tracks[0]);
+  const [emoji,       setEmoji]       = useState("🚀");
 
-  const limit = isPro ? Infinity : PLAN_LIMITS.free.maxProjects;
-  const count = canPostData?.count ?? 0;
+  const limit   = isPro ? Infinity : PLAN_LIMITS.free.maxProjects;
+  const count   = canPostData?.count ?? 0;
   const canPost = canPostData?.canPost ?? true;
 
   const inp = "w-full bg-surface border border-border rounded-lg px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary";
@@ -30,10 +31,13 @@ export default function SubmitProjectModal({ onClose }: Props) {
   const handleSubmit = () => {
     if (!title.trim() || !description.trim()) return;
     const tags = tagsInput.split(",").map((t) => t.trim()).filter(Boolean);
-    submit.mutate({ title: title.trim(), description: description.trim(), tags, track, emoji }, {
-      onSuccess: () => { toast({ title: "Project shipped! 🚀" }); onClose(); },
-      onError: (err: any) => toast({ title: "Error", description: err.message, variant: "destructive" }),
-    });
+    submit.mutate(
+      { title: title.trim(), description: description.trim(), tags, track, emoji, project_url: projectUrl.trim() || undefined },
+      {
+        onSuccess: () => { toast({ title: "Project shipped! 🚀" }); onClose(); },
+        onError: (err: any) => toast({ title: "Error", description: err.message, variant: "destructive" }),
+      }
+    );
   };
 
   return (
@@ -49,9 +53,7 @@ export default function SubmitProjectModal({ onClose }: Props) {
         {/* Plan badge */}
         {!checking && (
           <div className={`mb-5 flex items-center justify-between px-3.5 py-2.5 rounded-lg text-xs border font-mono ${isPro ? "bg-primary/5 border-primary/20 text-primary" : canPost ? "bg-surface border-border text-muted-foreground" : "bg-destructive/10 border-destructive/20 text-destructive"}`}>
-            <span>
-              {isPro ? "✦ Pro — unlimited projects" : `Free: ${count} / ${limit} project published`}
-            </span>
+            <span>{isPro ? "✦ Pro — unlimited projects" : `Free: ${count} / ${limit} project published`}</span>
             {!isPro && (
               <Link to="/dashboard/settings" onClick={onClose} className="text-primary hover:underline flex items-center gap-1">
                 Upgrade <ArrowRight size={10} />
@@ -60,7 +62,6 @@ export default function SubmitProjectModal({ onClose }: Props) {
           </div>
         )}
 
-        {/* Limit wall */}
         {!canPost && !checking ? (
           <div className="text-center py-8 space-y-4">
             <div className="w-14 h-14 rounded-full bg-destructive/10 flex items-center justify-center mx-auto">
@@ -85,6 +86,21 @@ export default function SubmitProjectModal({ onClose }: Props) {
                 placeholder="What does it do? What tech did you use?" className={`${inp} resize-none`} />
               <p className="text-[10px] font-mono text-muted-foreground mt-0.5 text-right">{description.length}/500</p>
             </div>
+
+            {/* ── Project URL — the key new field ── */}
+            <div>
+              <label className="text-xs font-mono text-muted-foreground mb-1.5 block">
+                Project Link <span className="text-muted-foreground/50">(optional — GitHub, live site, etc.)</span>
+              </label>
+              <div className="relative">
+                <ExternalLink size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                <input type="url" value={projectUrl} onChange={(e) => setProjectUrl(e.target.value)}
+                  placeholder="https://github.com/you/project"
+                  className={`${inp} pl-8`} />
+              </div>
+              <p className="text-[10px] font-mono text-muted-foreground mt-0.5">Visible to all community members as a clickable link.</p>
+            </div>
+
             <div>
               <label className="text-xs font-mono text-muted-foreground mb-1.5 block">Tags (comma separated)</label>
               <input type="text" value={tagsInput} onChange={(e) => setTagsInput(e.target.value)} maxLength={200} placeholder="React, AI, Python" className={inp} />
