@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { ArrowRight, Download, ExternalLink, Heart, Flame, Zap, BookOpen, Calendar } from "lucide-react";
+import { ArrowRight, Download, ExternalLink, Heart, Flame, Zap, BookOpen, Calendar, Globe } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useMyProjects } from "@/hooks/useCommunity";
 import { supabase } from "@/integrations/supabase/client";
@@ -78,7 +78,7 @@ export default function PortfolioView() {
           body { background: white !important; color: black !important; }
           .print-card { border: 1px solid #e5e7eb !important; border-radius: 8px; margin-bottom: 16px; padding: 16px; }
         }
-        @media screen { #portfolio-print-root { display: contents; } }
+        @media screen { #portfolio-print-root { display: block; } }
       `}</style>
 
       <div id="portfolio-print-root" ref={printRef} className="p-6 sm:p-8 max-w-4xl animate-fade-in opacity-0">
