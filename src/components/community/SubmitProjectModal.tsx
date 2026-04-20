@@ -71,7 +71,7 @@ export default function SubmitProjectModal({ onClose }: Props) {
             <p className="text-sm text-muted-foreground">Free builders can publish <strong>1 project</strong>.<br />Upgrade to Pro for unlimited projects.</p>
             <Link to="/dashboard/settings" onClick={onClose}
               className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors">
-              Upgrade to Pro — ₹299/mo <ArrowRight size={14} />
+              Upgrade to Pro — ₹399/mo <ArrowRight size={14} />
             </Link>
           </div>
         ) : (
