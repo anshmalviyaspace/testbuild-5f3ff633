@@ -3,16 +3,16 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { ChevronLeft, List, Zap, Flame, BookOpen } from "lucide-react";
 import type { Module } from "@/data/trackData";
-import { initialModules } from "@/data/trackData";
+import { getTrackModules } from "@/data/trackData";
 import TrackSidebar from "@/components/track/TrackSidebar";
 import ModuleDetail from "@/components/track/ModuleDetail";
 import CompletionModal from "@/components/track/CompletionModal";
 import { useTrackProgress, useToggleResource, useCompleteModule, useSaveActiveModule } from "@/hooks/useTrackProgress";
 
-function buildModules(completedIds: string[]): Module[] {
-  return initialModules.map((mod, idx) => {
+function buildModules(completedIds: string[], trackModules: Module[]): Module[] {
+  return trackModules.map((mod, idx) => {
     const isCompleted = completedIds.includes(String(mod.id));
-    const prevCompleted = idx === 0 || completedIds.includes(String(initialModules[idx-1].id));
+    const prevCompleted = idx === 0 || completedIds.includes(String(trackModules[idx-1].id));
     const isInProgress = !isCompleted && prevCompleted;
     return { ...mod, status: isCompleted ? "completed" : isInProgress ? "in-progress" : "locked" };
   });
@@ -44,7 +44,8 @@ export default function TrackView() {
   const completedIds       = progress?.completed_modules  ?? [];
   const checkedResourceIds = progress?.checked_resources  ?? [];
   const savedActiveId      = progress?.active_module_id   ?? null;
-  const modules            = buildModules(completedIds);
+  const trackModules       = getTrackModules(userTrack);
+  const modules            = buildModules(completedIds, trackModules);
   const checkedResources   = new Set<string>(checkedResourceIds);
 
   const [activeModuleId,   setActiveModuleId]   = useState<number>(1);
@@ -62,7 +63,7 @@ export default function TrackView() {
   const activeModule    = modules.find((m) => m.id === activeModuleId) ?? modules[0];
   const completedCount  = completedIds.length;
   const totalXp         = modules.filter((m) => completedIds.includes(String(m.id))).reduce((s,m) => s+m.xp, 0);
-  const totalPossibleXp = modules.reduce((s,m) => s+m.xp, 0);
+  const totalPossibleXp = trackModules.reduce((s,m) => s+m.xp, 0);
   const progressPercent = modules.length ? (completedCount/modules.length)*100 : 0;
 
   const handleModuleClick = useCallback((mod: Module) => {

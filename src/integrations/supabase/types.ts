@@ -22,6 +22,7 @@ export type Database = {
           gradient_from: string
           gradient_to: string
           id: string
+          project_url: string | null
           tags: string[]
           title: string
           track: string
@@ -35,6 +36,7 @@ export type Database = {
           gradient_from?: string
           gradient_to?: string
           id?: string
+          project_url?: string | null
           tags?: string[]
           title: string
           track?: string
@@ -48,6 +50,7 @@ export type Database = {
           gradient_from?: string
           gradient_to?: string
           id?: string
+          project_url?: string | null
           tags?: string[]
           title?: string
           track?: string
@@ -59,6 +62,7 @@ export type Database = {
       profiles: {
         Row: {
           avatar_initials: string | null
+          avatar_url: string | null
           bio: string | null
           college: string | null
           created_at: string | null
@@ -66,7 +70,9 @@ export type Database = {
           email: string | null
           full_name: string | null
           id: string
+          last_active_date: string | null
           personality_type: string | null
+          plan_type: string
           quiz_level: string | null
           quiz_score: number | null
           quiz_taken: boolean | null
@@ -77,6 +83,7 @@ export type Database = {
         }
         Insert: {
           avatar_initials?: string | null
+          avatar_url?: string | null
           bio?: string | null
           college?: string | null
           created_at?: string | null
@@ -84,7 +91,9 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id: string
+          last_active_date?: string | null
           personality_type?: string | null
+          plan_type?: string
           quiz_level?: string | null
           quiz_score?: number | null
           quiz_taken?: boolean | null
@@ -95,6 +104,7 @@ export type Database = {
         }
         Update: {
           avatar_initials?: string | null
+          avatar_url?: string | null
           bio?: string | null
           college?: string | null
           created_at?: string | null
@@ -102,7 +112,9 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          last_active_date?: string | null
           personality_type?: string | null
+          plan_type?: string
           quiz_level?: string | null
           quiz_score?: number | null
           quiz_taken?: boolean | null
@@ -283,6 +295,7 @@ export type Database = {
           current_track: string | null
           full_name: string | null
           id: string | null
+          plan_type: string | null
           project_count: number | null
           username: string | null
           xp_points: number | null

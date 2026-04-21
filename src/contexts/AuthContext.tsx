@@ -33,7 +33,9 @@ function rowToUser(row: any, email?: string): User {
     college: row.college ?? "", currentTrack: row.current_track ?? "AI & Machine Learning",
     xpPoints: row.xp_points ?? 0, streakDays: row.streak_days ?? 0,
     avatarInitials: row.avatar_initials ?? "BU", bio: row.bio ?? undefined,
-    email: row.email ?? email, planType: row.plan_type === "pro" ? "pro" : "free",
+    email: row.email ?? email,
+    planType: row.plan_type === "pro" ? "pro" : "free",
+    avatarUrl: row.avatar_url ?? undefined,
   };
 }
 
