@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { ExternalLink, ChevronDown, ChevronUp, Sparkles, Gift } from "lucide-react";
 import clsx from "clsx";
+// ── Early-access mode: show Coming Soon instead of full tools UI ──
+import ComingSoonView from "@/components/ComingSoonView";
 
 interface Tool {
   name: string;
@@ -402,6 +404,10 @@ function ToolCard({ tool }: { tool: Tool }) {
 export default function ToolsView() {
   const [activeCategory, setActiveCategory] = useState("builders");
   const category = CATEGORIES.find((c) => c.id === activeCategory) ?? CATEGORIES[0];
+
+  // ── EARLY-ACCESS GATE ── Remove this line when Tools goes live ────────────
+  return <ComingSoonView section="tools" />;
+  // ─────────────────────────────────────────────────────────────────────────
 
   return (
     <div className="p-4 sm:p-8 animate-fade-in opacity-0">

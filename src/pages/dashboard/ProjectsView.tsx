@@ -5,6 +5,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import NewProjectModal from "@/components/projects/NewProjectModal";
 import { useMyProjects, useSubmitProject, useDeleteProject } from "@/hooks/useCommunity";
+// ── Early-access mode: show Coming Soon instead of full projects UI ──
+import ComingSoonView from "@/components/ComingSoonView";
 
 function Skeleton({ className = "" }: { className?: string }) {
   return <div className={`bg-surface2 rounded-lg animate-pulse ${className}`} />;
@@ -51,6 +53,10 @@ export default function ProjectsView() {
       setDeletingId(null);
     }
   };
+
+  // ── EARLY-ACCESS GATE ── Remove this block when Projects goes live ────────
+  return <ComingSoonView section="projects" />;
+  // ─────────────────────────────────────────────────────────────────────────
 
   if (isLoading) {
     return (

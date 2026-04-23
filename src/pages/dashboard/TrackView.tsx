@@ -8,6 +8,8 @@ import TrackSidebar from "@/components/track/TrackSidebar";
 import ModuleDetail from "@/components/track/ModuleDetail";
 import CompletionModal from "@/components/track/CompletionModal";
 import { useTrackProgress, useToggleResource, useCompleteModule, useSaveActiveModule } from "@/hooks/useTrackProgress";
+// ── Early-access mode: show Coming Soon instead of full track UI ──
+import ComingSoonView from "@/components/ComingSoonView";
 
 function buildModules(completedIds: string[], trackModules: Module[]): Module[] {
   return trackModules.map((mod, idx) => {
@@ -97,6 +99,10 @@ export default function TrackView() {
   }, [modules, activeModuleId, completedIds, currentUser, userTrack, completeModule, toast]);
 
   if (isLoading) return <Skeleton />;
+
+  // ── EARLY-ACCESS GATE ── Remove this block when Track goes live ──────────
+  return <ComingSoonView section="track" />;
+  // ─────────────────────────────────────────────────────────────────────────
 
   const statsBar = (
     <div className="flex items-center gap-4 px-4 py-2.5 bg-surface border-b border-border text-xs font-mono shrink-0 flex-wrap">

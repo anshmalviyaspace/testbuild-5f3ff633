@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { useMyProjects } from "@/hooks/useCommunity";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+// ── Early-access mode: show Coming Soon instead of full portfolio UI ──
+import ComingSoonView from "@/components/ComingSoonView";
 
 interface QuizResult {
   personality_type: string;
@@ -76,6 +78,10 @@ export default function PortfolioView() {
       }
     })();
   }, [currentUser]);
+
+  // ── EARLY-ACCESS GATE ── Remove this block when Portfolio goes live ───────
+  if (!isLoading && currentUser) return <ComingSoonView section="portfolio" />;
+  // ─────────────────────────────────────────────────────────────────────────
 
   if (isLoading || !currentUser) {
     return (
