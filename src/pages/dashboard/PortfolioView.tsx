@@ -4,6 +4,7 @@ import { ArrowRight, Download, ExternalLink, Heart, Flame, Zap, BookOpen, Calend
 import { useEffect, useState } from "react";
 import { useMyProjects } from "@/hooks/useCommunity";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface QuizResult {
   personality_type: string;
@@ -31,7 +32,13 @@ function UserAvatar({ initials, avatarUrl }: { initials: string; avatarUrl?: str
 
 export default function PortfolioView() {
   const { currentUser, isLoading } = useAuth();
+  const { toast } = useToast();
   const { data: projects = [], isLoading: projectsLoading } = useMyProjects();
+
+  const handleExport = () => {
+    toast({ title: "Tip", description: "Use Ctrl+P (or Cmd+P) → Save as PDF. Your portfolio is print-ready." });
+    setTimeout(() => window.print(), 600);
+  };
   const [quiz, setQuiz]     = useState<QuizResult | null>(null);
   const [joined, setJoined] = useState("Recently");
 
@@ -96,7 +103,7 @@ export default function PortfolioView() {
             Public view <ArrowRight size={12} />
           </Link>
           <button
-            onClick={() => window.print()}
+            onClick={handleExport}
             className="inline-flex items-center gap-1.5 border border-border px-4 py-2 rounded-lg text-xs font-mono text-muted-foreground hover:text-foreground hover:border-muted-foreground/40 transition-colors"
           >
             <Download size={13} /> Export PDF
@@ -179,8 +186,12 @@ export default function PortfolioView() {
         </section>
       ) : (
         <section className="bg-card border border-dashed border-border rounded-2xl p-6 mb-5 text-center">
-          <p className="text-sm text-muted-foreground mb-2">Assessment not taken yet</p>
-          <Link to="/quiz" className="text-xs font-mono text-primary hover:underline">Take Assessment →</Link>
+          <span className="text-3xl block mb-3">🧠</span>
+          <p className="text-sm font-medium mb-1">Builder Assessment not taken yet</p>
+          <p className="text-xs text-muted-foreground mb-3">Take the quiz to unlock your builder personality type and score.</p>
+          <Link to="/quiz" className="inline-flex items-center gap-1.5 bg-primary text-primary-foreground text-xs font-semibold px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors">
+            Take Assessment <ArrowRight size={12} />
+          </Link>
         </section>
       )}
 
@@ -291,7 +302,7 @@ export default function PortfolioView() {
             <Globe size={14} /> Public Link
           </Link>
           <button
-            onClick={() => window.print()}
+            onClick={handleExport}
             className="inline-flex items-center gap-1.5 bg-primary text-primary-foreground px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors"
           >
             <Download size={15} /> Export PDF

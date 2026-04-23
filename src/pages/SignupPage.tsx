@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, ArrowRight } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import CollegePicker from "@/components/CollegePicker";
+import { isVerifiedCollege } from "@/data/indianColleges";
 
 const avatarInitials = ["RM", "SK", "DS", "AP", "KR", "PN"];
 const avatarColors = [
@@ -40,8 +42,8 @@ export default function SignupPage() {
     const e: Record<string, string> = {};
     if (!form.fullName.trim()) e.fullName = "Full name is required";
     else if (form.fullName.trim().length > 100) e.fullName = "Name must be less than 100 characters";
-    if (!form.college.trim()) e.college = "College name is required";
-    else if (form.college.trim().length > 150) e.college = "College name too long";
+    if (!form.college.trim()) e.college = "College is required";
+    else if (!isVerifiedCollege(form.college)) e.college = "Please select your college from the dropdown";
     if (!form.email.trim()) e.email = "Email is required";
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim()))
       e.email = "Enter a valid email";
@@ -149,15 +151,12 @@ export default function SignupPage() {
             {/* College */}
             <div>
               <label className="text-xs font-mono text-muted-foreground uppercase tracking-wider">
-                College Name
+                College / University
               </label>
-              <input
-                type="text"
+              <CollegePicker
                 value={form.college}
-                onChange={(e) => updateField("college", e.target.value)}
-                maxLength={150}
-                placeholder="IIT Delhi"
-                className="w-full mt-1.5 bg-surface border border-border rounded-lg px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary transition-shadow"
+                onChange={(val) => updateField("college", val)}
+                placeholder="Search your college or university…"
               />
               {errors.college && (
                 <p className="text-xs text-destructive mt-1 font-mono">{errors.college}</p>

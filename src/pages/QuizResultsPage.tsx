@@ -185,7 +185,7 @@ export default function QuizResultsPage() {
       <div className="relative z-10 max-w-2xl mx-auto px-6 py-12 space-y-10">
         {/* Section 1 — Identity */}
         <section className="text-center animate-fade-in opacity-0" style={{ animationDelay: "0ms" }}>
-          <p className="text-[10px] font-mono text-muted-foreground tracking-widest uppercase mb-4">YOUR BUILDHUB PROFILE</p>
+          <p className="text-[10px] font-mono text-muted-foreground tracking-widest uppercase mb-4">YOUR JUSTBUILD PROFILE</p>
           <div className="w-[72px] h-[72px] rounded-full mx-auto mb-4 flex items-center justify-center text-xl font-heading font-bold text-primary-foreground" style={{ background: "linear-gradient(135deg, hsl(160 100% 45%), hsl(220 100% 50%))" }}>
             {currentUser.avatarInitials}
           </div>

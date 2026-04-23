@@ -6,6 +6,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import clsx from "clsx";
 import ConfettiEffect from "@/components/onboarding/ConfettiEffect";
+import CollegePicker from "@/components/CollegePicker";
+import { isVerifiedCollege } from "@/data/indianColleges";
 
 const tracks = [
   {
@@ -286,14 +288,12 @@ export default function OnboardingPage() {
               {/* College */}
               <div>
                 <label className="text-xs font-mono text-muted-foreground uppercase tracking-wider">
-                  College
+                  College / University
                 </label>
-                <input
-                  type="text"
+                <CollegePicker
                   value={college}
-                  onChange={(e) => setCollege(e.target.value.slice(0, 150))}
-                  maxLength={150}
-                  className="w-full mt-1.5 bg-surface border border-border rounded-lg px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary transition-shadow"
+                  onChange={(val) => setCollege(val)}
+                  placeholder="Search your college or university…"
                 />
               </div>
             </div>
@@ -307,10 +307,10 @@ export default function OnboardingPage() {
               </button>
               <button
                 onClick={goNext}
-                disabled={!username.trim()}
+                disabled={!username.trim() || !isVerifiedCollege(college)}
                 className={clsx(
                   "flex items-center gap-2 px-7 py-3 rounded-lg font-semibold text-sm transition-all",
-                  username.trim()
+                  username.trim() && isVerifiedCollege(college)
                     ? "bg-primary text-primary-foreground hover:bg-primary/90"
                     : "bg-border text-muted-foreground cursor-not-allowed"
                 )}

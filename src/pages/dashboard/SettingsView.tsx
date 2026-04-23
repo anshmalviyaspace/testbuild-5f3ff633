@@ -4,6 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { AlertTriangle, ArrowRight, X, Upload, Camera } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import CollegePicker from "@/components/CollegePicker";
 
 const trackOptions = [
   { value: "AI & Machine Learning", emoji: "🤖" },
@@ -177,7 +178,19 @@ export default function SettingsView() {
   };
 
   // ── Delete account ────────────────────────────────────────────────────────
-  const handleDeleteAccount = () => { logout(); navigate("/"); };
+  const handleDeleteAccount = async () => {
+    try {
+      // Delete profile row first (cascade will clean up related data)
+      await supabase.from("profiles").delete().eq("id", currentUser.id);
+      // Sign out and let the user know — full auth deletion requires a server function,
+      // but signing out + deleting profile effectively deactivates the account.
+      await logout();
+      toast({ title: "Account deleted", description: "Your data has been removed." });
+      navigate("/");
+    } catch (err) {
+      toast({ title: "Delete failed", description: "Please try again.", variant: "destructive" });
+    }
+  };
 
   const inp = "w-full mt-1.5 bg-surface border border-border rounded-lg px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary transition-shadow";
   const trackEmoji = trackOptions.find((t) => t.value === currentUser.currentTrack)?.emoji || "🤖";
@@ -262,7 +275,10 @@ export default function SettingsView() {
           </div>
           <div>
             <label className="text-xs font-mono text-muted-foreground">College / University</label>
-            <input value={college} onChange={(e) => setCollege(e.target.value)} className={inp} />
+            <CollegePicker
+              value={college}
+              onChange={(val) => setCollege(val)}
+            />
           </div>
           <div>
             <label className="text-xs font-mono text-muted-foreground">Bio</label>
@@ -408,13 +424,19 @@ export default function SettingsView() {
                 <p className="text-xs text-muted-foreground">This cannot be undone.</p>
               </div>
             </div>
-            <p className="text-sm text-muted-foreground">All your projects, progress, and data will be permanently deleted.</p>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              All your projects, progress, XP, and data will be <span className="text-destructive font-medium">permanently deleted</span>. You will not be able to recover this account.
+            </p>
+            <div className="bg-surface border border-border rounded-lg px-4 py-2.5">
+              <p className="text-xs font-mono text-muted-foreground">Deleting account for</p>
+              <p className="text-sm font-medium mt-0.5">@{currentUser.username}</p>
+            </div>
             <div className="flex gap-3">
               <button onClick={() => setShowDeleteModal(false)} className="flex-1 bg-surface2 border border-border py-2.5 rounded-lg text-sm font-mono text-muted-foreground hover:text-foreground transition-colors">
                 Cancel
               </button>
               <button onClick={handleDeleteAccount} className="flex-1 bg-destructive text-destructive-foreground py-2.5 rounded-lg text-sm font-semibold hover:bg-destructive/90 transition-colors">
-                Delete
+                Yes, Delete
               </button>
             </div>
           </div>

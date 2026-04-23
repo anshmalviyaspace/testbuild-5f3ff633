@@ -110,7 +110,20 @@ export default function LoginPage() {
               <div className="flex items-center justify-between">
                 <label className="text-xs font-mono text-muted-foreground uppercase tracking-wider">Password</label>
                 <button type="button" className="text-[11px] font-mono text-muted-foreground hover:text-primary transition-colors"
-                  onClick={() => toast({ title: "Coming soon", description: "Password reset will be available shortly." })}>
+                  onClick={async () => {
+                    if (!email.trim()) {
+                      setErrors(p => ({ ...p, email: "Enter your email first to reset password" }));
+                      return;
+                    }
+                    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+                      redirectTo: `${window.location.origin}/login`,
+                    });
+                    if (error) {
+                      toast({ title: "Error", description: error.message, variant: "destructive" });
+                    } else {
+                      toast({ title: "Reset email sent", description: "Check your inbox for a password reset link." });
+                    }
+                  }}>
                   Forgot password?
                 </button>
               </div>

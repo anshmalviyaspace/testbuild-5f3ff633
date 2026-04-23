@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 import clsx from "clsx";
 
 interface QuizOption {
@@ -87,7 +88,7 @@ function SectionTransition({ category, onComplete }: { category: string; onCompl
 
   const content = category === "mindset"
     ? { emoji: "🧠", title: "Mindset mapped.", sub: "Now let's check your technical baseline." }
-    : { emoji: "⚡", title: "Knowledge logged.", sub: "Last section — tell us about your future." };
+    : { emoji: "⚡", title: "Knowledge logged.", sub: "One last section — what does your future look like?" };
 
   return (
     <div className="flex flex-col items-center justify-center animate-fade-in opacity-0">
@@ -101,6 +102,7 @@ function SectionTransition({ category, onComplete }: { category: string; onCompl
 export default function QuizPage() {
   const navigate = useNavigate();
   const { currentUser, session, refreshProfile } = useAuth();
+  const { toast } = useToast();
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
@@ -309,7 +311,13 @@ export default function QuizPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-pulse text-muted-foreground font-mono text-sm">Loading quiz...</div>
+        <div className="flex flex-col items-center gap-4">
+          <span className="font-heading text-xl font-extrabold tracking-tight">
+            Just<span className="text-primary">Build</span>
+          </span>
+          <div className="w-5 h-5 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+          <p className="text-xs font-mono text-muted-foreground">Loading your quiz…</p>
+        </div>
       </div>
     );
   }

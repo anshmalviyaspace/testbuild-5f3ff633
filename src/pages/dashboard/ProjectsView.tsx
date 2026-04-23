@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Plus, Heart, Calendar, ArrowRight, Trash2, Loader2 } from "lucide-react";
+import { Plus, Heart, Calendar, ArrowRight, Trash2, Loader2, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import NewProjectModal from "@/components/projects/NewProjectModal";
@@ -15,6 +15,7 @@ export default function ProjectsView() {
   const location = useLocation();
   const [showModal, setShowModal] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   const { data: projects = [], isLoading } = useMyProjects();
   const submitProject = useSubmitProject();
@@ -39,6 +40,7 @@ export default function ProjectsView() {
   };
 
   const handleDelete = async (id: string) => {
+    setConfirmDeleteId(null);
     setDeletingId(id);
     try {
       await deleteProject.mutateAsync(id);
@@ -127,7 +129,7 @@ export default function ProjectsView() {
                 <Link to="/dashboard/community" className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors font-mono">
                   View in Community <ArrowRight size={11} />
                 </Link>
-                <button onClick={() => handleDelete(p.id)} disabled={deletingId === p.id}
+                <button onClick={() => setConfirmDeleteId(p.id)} disabled={deletingId === p.id}
                   className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-destructive transition-colors font-mono ml-auto disabled:opacity-40">
                   {deletingId === p.id ? <Loader2 size={11} className="animate-spin" /> : <Trash2 size={11} />} Delete
                 </button>
@@ -138,6 +140,32 @@ export default function ProjectsView() {
       </div>
 
       {showModal && <NewProjectModal onClose={() => setShowModal(false)} onPublish={handlePublish} prefillTitle={briefData?.prefillTitle} prefillDescription={briefData?.prefillDescription} />}
+
+      {/* Delete confirmation modal */}
+      {confirmDeleteId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={() => setConfirmDeleteId(null)}>
+          <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" />
+          <div onClick={(e) => e.stopPropagation()} className="relative w-full max-w-sm bg-card border border-border rounded-xl p-6 space-y-4 animate-scale-in">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-destructive/10 flex items-center justify-center shrink-0">
+                <AlertTriangle size={18} className="text-destructive" />
+              </div>
+              <div>
+                <h3 className="font-heading font-bold text-sm">Delete Project?</h3>
+                <p className="text-xs text-muted-foreground">This will remove it from your portfolio and community feed.</p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <button onClick={() => setConfirmDeleteId(null)} className="flex-1 bg-surface2 border border-border py-2.5 rounded-lg text-sm font-mono text-muted-foreground hover:text-foreground transition-colors">
+                Cancel
+              </button>
+              <button onClick={() => handleDelete(confirmDeleteId)} className="flex-1 bg-destructive text-destructive-foreground py-2.5 rounded-lg text-sm font-semibold hover:bg-destructive/90 transition-colors">
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

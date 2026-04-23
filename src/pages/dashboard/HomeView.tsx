@@ -88,7 +88,7 @@ export default function HomeView() {
           <h1 className="font-heading text-2xl sm:text-[28px] font-extrabold leading-tight">
             {getGreeting()}, {firstName} 👋
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">Welcome to your builder dashboard.</p>
+          <p className="text-sm text-muted-foreground mt-1">Here's your builder dashboard — keep the momentum going.</p>
         </div>
         <p className="text-xs font-mono text-muted-foreground shrink-0 mt-1 sm:mt-2">{formatDate()}</p>
       </div>
@@ -191,11 +191,23 @@ export default function HomeView() {
         {/* Up Next */}
         <div className="lg:col-span-2 bg-card border border-border rounded-xl p-6 flex flex-col">
           <p className="text-[10px] font-mono text-muted-foreground tracking-widest uppercase mb-4">UP NEXT</p>
-          <div className="flex-1 space-y-3">
-            <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center"><span className="text-lg">🧠</span></div>
-            <h3 className="font-heading font-bold">Understanding AI & LLMs</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">Start with the fundamentals — understand what AI models are, how they work, and where they're going.</p>
-          </div>
+          {(() => {
+            const track = currentUser.currentTrack || "";
+            const upNext = track.includes("AI")
+              ? { emoji: "🧠", title: "Understanding AI & LLMs", desc: "Start with the fundamentals — understand what AI models are, how they work, and where they're going." }
+              : track.includes("UI")
+              ? { emoji: "🎨", title: "Design Thinking Foundations", desc: "Learn how to think like a designer — user research, wireframing, and building intuition for good UI." }
+              : track.includes("Full")
+              ? { emoji: "💻", title: "Frontend Fundamentals", desc: "Build your first interactive webpage — HTML, CSS, and JavaScript from scratch." }
+              : { emoji: "🚀", title: "Finding Your Startup Idea", desc: "Discover how to validate a real problem worth solving before writing a single line of code." };
+            return (
+              <div className="flex-1 space-y-3">
+                <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center"><span className="text-lg">{upNext.emoji}</span></div>
+                <h3 className="font-heading font-bold">{upNext.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{upNext.desc}</p>
+              </div>
+            );
+          })()}
           <Link to="/dashboard/track" className="mt-5 inline-flex items-center gap-2 border border-border px-5 py-2.5 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:border-muted-foreground/40 transition-colors self-start">
             Preview Module <ArrowRight size={14} />
           </Link>

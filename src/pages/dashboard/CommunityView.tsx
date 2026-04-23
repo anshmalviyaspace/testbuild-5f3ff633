@@ -46,7 +46,11 @@ export default function CommunityView() {
         </button>
       </div>
       <p className="text-sm text-muted-foreground mb-6">
-        {projects.length} projects · <span className="text-primary font-mono text-xs">● live</span>
+        {isLoading ? (
+          <span className="text-muted-foreground/50 font-mono text-xs">Loading…</span>
+        ) : (
+          <>{projects.length} project{projects.length !== 1 ? "s" : ""} · <span className="text-primary font-mono text-xs">● live</span></>
+        )}
       </p>
 
       {/* Tabs */}

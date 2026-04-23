@@ -15,7 +15,7 @@ const navItems = [
   { to: "/dashboard/settings",  label: "Settings",  icon: Settings },
 ];
 
-const bottomTabs = [navItems[0], navItems[1], navItems[3], navItems[4], navItems[5]];
+const bottomTabs = [navItems[0], navItems[1], navItems[2], navItems[3], navItems[6]]; // Home, Track, Projects, Community, Settings
 
 function UserAvatar({ initials, avatarUrl, size = 10 }: { initials: string; avatarUrl?: string; size?: number }) {
   const dim = `w-${size} h-${size}`;

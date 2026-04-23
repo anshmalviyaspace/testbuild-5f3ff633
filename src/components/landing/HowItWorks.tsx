@@ -83,10 +83,8 @@ export default function HowItWorks() {
               <div key={step.num} className="step-card flex gap-6 sm:gap-8 pb-10 last:pb-0 relative">
                 {/* Number dot */}
                 <div className="flex-shrink-0 relative z-10">
-                  <div className={`w-10 h-10 rounded-full border-2 flex items-center justify-center font-mono text-xs font-bold transition-all ${
-                    i < 2 ? "bg-primary border-primary text-primary-foreground" : "bg-surface border-border text-muted-foreground"
-                  }`}>
-                    {i < 2 ? "✓" : step.num}
+                  <div className="w-10 h-10 rounded-full border-2 border-border bg-surface flex items-center justify-center font-mono text-xs font-bold text-muted-foreground">
+                    {step.num}
                   </div>
                 </div>
 
