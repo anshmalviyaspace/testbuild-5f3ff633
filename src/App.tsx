@@ -9,6 +9,7 @@ import LandingPage from "@/pages/LandingPage";
 import AboutPage from "@/pages/AboutPage";
 import SignupPage from "@/pages/SignupPage";
 import LoginPage from "@/pages/LoginPage";
+import OTPVerificationPage from "@/pages/OTPVerificationPage";
 import OnboardingPage from "@/pages/OnboardingPage";
 import QuizPage from "@/pages/QuizPage";
 import QuizResultsPage from "@/pages/QuizResultsPage";
@@ -40,6 +41,7 @@ const App = () => (
             <Route path="/about" element={<AboutPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/verify-otp" element={<OTPVerificationPage />} />
             <Route path="/onboarding" element={<OnboardingPage />} />
             <Route path="/profile/:username" element={<PublicProfilePage />} />
 

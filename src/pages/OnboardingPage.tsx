@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft, ArrowRight, Check, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -38,19 +38,23 @@ const tracks = [
 
 export default function OnboardingPage() {
   const navigate = useNavigate();
-  const { signupData, refreshProfile } = useAuth();
+  const location = useLocation();
+  const { refreshProfile } = useAuth();
   const { toast } = useToast();
+
+  // Signup data passed from OTPVerificationPage via location.state
+  const signupData = location.state?.signupData || null;
 
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState<"right" | "left">("right");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Step 1 state
+  // Step 1
   const [selectedTrack, setSelectedTrack] = useState<number | null>(null);
 
-  // Step 2 state
+  // Step 2
   const autoUsername = useMemo(() => {
-    if (!signupData) return "builder";
+    if (!signupData?.fullName) return "builder";
     return signupData.fullName
       .toLowerCase()
       .replace(/\s+/g, "")
@@ -67,95 +71,79 @@ export default function OnboardingPage() {
   const goBack = () => { setDirection("left"); setStep((s) => s - 1); };
 
   const handleFinish = async () => {
-    if (!signupData) {
-      navigate("/signup");
-      return;
-    }
-
     setIsSubmitting(true);
 
-    const track = selectedTrack !== null ? tracks[selectedTrack] : tracks[0];
-    const initials = signupData.fullName
-      .split(" ")
-      .map((w) => w[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
+    try {
+      const track = selectedTrack !== null ? tracks[selectedTrack] : tracks[0];
 
-    // 1. Create the Supabase auth user (auto-confirm is enabled)
-    const { data: authData, error: signUpError } = await supabase.auth.signUp({
-      email: signupData.email,
-      password: signupData.password,
-      options: {
-        data: {
-          full_name: signupData.fullName,
-        },
-      },
-    });
+      // User is already authenticated via OTP — get their auth record
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
 
-    if (signUpError) {
-      setIsSubmitting(false);
-      if (signUpError.message.includes("already registered")) {
+      if (userError || !user) {
         toast({
-          title: "Email already in use",
-          description: "Try logging in instead.",
+          title: "Session expired",
+          description: "Please sign up again.",
           variant: "destructive",
         });
-      } else {
-        toast({
-          title: "Signup failed",
-          description: signUpError.message,
-          variant: "destructive",
-        });
+        navigate("/signup", { replace: true });
+        return;
       }
-      return;
-    }
 
-    const userId = authData.user?.id;
-    if (!userId) {
-      setIsSubmitting(false);
-      toast({ title: "Something went wrong", description: "Please try again.", variant: "destructive" });
-      return;
-    }
+      const initials = (signupData?.fullName || username || "BU")
+        .split(" ")
+        .map((w: string) => w[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2);
 
-    // 2. Insert the profile row into `profiles`
-    const { error: profileError } = await supabase.from("profiles").insert({
-      id: userId,
-      full_name: signupData.fullName,
-      username: username || autoUsername,
-      college: college || signupData.college,
-      current_track: track.name,
-      xp_points: 0,
-      streak_days: 0,
-      avatar_initials: initials,
-      bio: bio || null,
-      email: signupData.email,
-      plan_type: "free",
-    });
+      // Insert profile row — welcome email trigger fires here automatically
+      const { error: profileError } = await supabase.from("profiles").insert({
+        id: user.id,
+        full_name: signupData?.fullName || "",
+        email: user.email,
+        username: username || autoUsername,
+        college: college || signupData?.college || "",
+        current_track: track.name,
+        xp_points: 0,
+        streak_days: 0,
+        avatar_initials: initials,
+        bio: bio || null,
+        plan_type: "free",
+      });
 
-    if (profileError) {
-      console.error("Profile insert error:", profileError.message);
-      setIsSubmitting(false);
-      
-      // Profile creation failed — sign out the auth user to prevent orphaned accounts
-      await supabase.auth.signOut();
-      
+      if (profileError) {
+        // Username already taken
+        if (profileError.message.includes("username")) {
+          toast({
+            title: "Username taken",
+            description: "Please choose a different username.",
+            variant: "destructive",
+          });
+          setStep(1);
+          setIsSubmitting(false);
+          return;
+        }
+        throw profileError;
+      }
+
+      await refreshProfile();
+
+      toast({
+        title: "Account created! 🎉",
+        description: "Starting your learning journey...",
+      });
+
+      navigate("/quiz", { replace: true });
+    } catch (err: any) {
+      console.error("Onboarding error:", err);
       toast({
         title: "Setup failed",
-        description: "We couldn't save your profile. Please try signing up again.",
+        description: err.message || "Please try again.",
         variant: "destructive",
       });
-      
-      navigate("/signup", { replace: true });
-      return;
+    } finally {
+      setIsSubmitting(false);
     }
-
-    // 3. Profile successfully inserted — refresh to populate currentUser BEFORE navigating to quiz
-    await refreshProfile();
-
-    setIsSubmitting(false);
-    toast({ title: "Account created! 🎉", description: "Starting your learning journey..." });
-    navigate("/quiz", { replace: true });
   };
 
   const animClass =
@@ -264,10 +252,6 @@ export default function OnboardingPage() {
                   maxLength={20}
                   className="w-full mt-1.5 bg-surface border border-border rounded-lg px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary transition-shadow"
                 />
-                <p className="text-xs text-muted-foreground mt-1.5 font-mono">
-                  Your profile will be at{" "}
-                  <span className="text-primary">justbuild.io/@{username || "..."}</span>
-                </p>
               </div>
 
               {/* Bio */}
@@ -321,7 +305,7 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        {/* STEP 3: All set — confirm + create account */}
+        {/* STEP 3: Confirm & Create */}
         {step === 2 && (
           <div key="step2" className={clsx(animClass, "max-w-md mx-auto text-center")}>
             <ConfettiEffect />

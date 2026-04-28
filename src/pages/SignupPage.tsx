@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff, ArrowRight } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+import { Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import CollegePicker from "@/components/CollegePicker";
 import { isVerifiedCollege } from "@/data/indianColleges";
 
@@ -17,8 +18,9 @@ const avatarColors = [
 
 export default function SignupPage() {
   const navigate = useNavigate();
-  const { setSignupData } = useAuth();
+  const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [form, setForm] = useState({
     fullName: "",
@@ -53,27 +55,64 @@ export default function SignupPage() {
     return Object.keys(e).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
-    setSignupData({
-      fullName: form.fullName.trim(),
-      college: form.college.trim(),
-      email: form.email.trim(),
-      password: form.password,
-    });
-    navigate("/onboarding");
+
+    setIsLoading(true);
+    try {
+      // Send OTP to the user's email
+      const { error: otpError } = await supabase.auth.signInWithOtp({
+        email: form.email.trim(),
+        options: {
+          shouldCreateUser: true,
+          data: { full_name: form.fullName.trim() },
+        },
+      });
+
+      if (otpError) {
+        if (otpError.message.includes("rate limit") || otpError.message.includes("too many")) {
+          setErrors({ email: "Too many attempts. Please wait a few minutes and try again." });
+          return;
+        }
+        throw otpError;
+      }
+
+      toast({
+        title: "Check your inbox! 📧",
+        description: `We sent a 6-digit code to ${form.email.trim()}`,
+      });
+
+      // Pass all signup data to OTP page
+      navigate("/verify-otp", {
+        state: {
+          email: form.email.trim(),
+          signupData: {
+            fullName: form.fullName.trim(),
+            email: form.email.trim(),
+            password: form.password,
+            college: form.college.trim(),
+          },
+        },
+      });
+    } catch (err: any) {
+      toast({
+        title: "Something went wrong",
+        description: err.message || "Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Left branding panel */}
       <div className="hidden lg:flex lg:w-[60%] relative bg-surface flex-col justify-between p-10 overflow-hidden">
-        {/* Grid background */}
         <div className="absolute inset-0 bg-grid-pattern opacity-60" />
         <div className="absolute inset-0 bg-radial-glow" />
 
-        {/* Logo */}
         <div className="relative z-10">
           <Link to="/" className="flex items-center gap-2">
             <span className="font-heading text-xl font-extrabold tracking-tight">
@@ -83,7 +122,6 @@ export default function SignupPage() {
           </Link>
         </div>
 
-        {/* Quote */}
         <div className="relative z-10 max-w-lg">
           <blockquote className="font-heading text-3xl xl:text-4xl font-bold leading-tight text-balance">
             "The best way to learn is to{" "}
@@ -91,7 +129,6 @@ export default function SignupPage() {
           </blockquote>
         </div>
 
-        {/* Avatars */}
         <div className="relative z-10 flex items-center gap-3">
           <div className="flex -space-x-2.5">
             {avatarInitials.map((init, i) => (
@@ -112,7 +149,6 @@ export default function SignupPage() {
       {/* Right form panel */}
       <div className="flex-1 flex items-center justify-center p-6 sm:p-10 lg:p-16">
         <div className="w-full max-w-sm animate-fade-in opacity-0">
-          {/* Mobile logo */}
           <div className="lg:hidden mb-8">
             <Link to="/" className="flex items-center gap-2">
               <span className="font-heading text-xl font-extrabold tracking-tight">
@@ -210,9 +246,18 @@ export default function SignupPage() {
 
             <button
               type="submit"
-              className="w-full bg-primary text-primary-foreground py-3 rounded-lg font-semibold text-sm hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
+              disabled={isLoading}
+              className="w-full bg-primary text-primary-foreground py-3 rounded-lg font-semibold text-sm hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              Create Account <ArrowRight size={16} />
+              {isLoading ? (
+                <>
+                  <Loader2 size={16} className="animate-spin" /> Sending code…
+                </>
+              ) : (
+                <>
+                  Continue <ArrowRight size={16} />
+                </>
+              )}
             </button>
           </form>
 
